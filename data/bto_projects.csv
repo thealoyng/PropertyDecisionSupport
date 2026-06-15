@@ -1,0 +1,37 @@
+name,town,classification,conf,batch,units,swt,lat,lon,search_term
+Tanjong Rhu Parc Front,Kallang/Whampoa,Prime,Confirmed,Feb 2025,812,No,1.2965,103.8730,Tanjong Rhu Road
+Stirling Horizon,Queenstown,Plus,Confirmed,Feb 2025,1110,No,1.2920,103.8050,Mei Chin Road
+Chencharu Vines,Yishun,Standard,Confirmed,Feb 2025,,Yes,1.4175,103.8290,Chencharu Yishun
+Chencharu Green,Yishun,Standard,Confirmed,Feb 2025,,Yes,1.4185,103.8300,Sembawang Road Yishun
+Woodlands North Verge,Woodlands,Standard,Confirmed,Feb 2025,1563,No,1.4480,103.7860,Woodlands North MRT
+Alexandra Peaks,Bukit Merah,Prime,Confirmed,Jul 2025,490,No,1.2870,103.8090,Alexandra Road Singapore
+Alexandra Vista,Bukit Merah,Prime,Confirmed,Jul 2025,590,No,1.2890,103.8070,Tanglin Halt Road
+Toa Payoh Ascent,Toa Payoh,Prime,Confirmed,Jul 2025,720,No,1.3375,103.8395,Caldecott MRT
+Clementi Emerald,Clementi,Prime,Confirmed,Jul 2025,750,Yes,1.3150,103.7650,Clementi MRT
+Bangkit Breeze,Bukit Panjang,Standard,Confirmed,Jul 2025,,Yes,1.3800,103.7720,Bangkit LRT
+Sembawang Beacon,Sembawang,Standard,Confirmed,Jul 2025,775,No,1.4520,103.8180,Admiralty Link
+Simei Symphony,Tampines,Standard,Confirmed,Jul 2025,380,No,1.3340,103.9520,Upper Changi MRT
+Woodlands North Grove,Woodlands,Standard,Confirmed,Jul 2025,1130,No,1.4500,103.7900,Woodlands North Coast
+Mount Pleasant Crest,Toa Payoh,Prime,Confirmed,Oct 2025,1348,No,1.3270,103.8410,Mount Pleasant MRT
+Berlayar Residences,Bukit Merah,Prime,Confirmed,Oct 2025,880,No,1.2735,103.8095,Telok Blangah MRT
+Bishan Terraces,Bishan,Prime,Estimated,Oct 2025,530,No,1.3540,103.8490,Bishan Street 12
+Jalan Bukit Merah,Bukit Merah,Prime,Estimated,Oct 2025,1020,No,1.2880,103.8170,Redhill MRT
+Ang Mo Kio Avenue 5,Ang Mo Kio,Plus,Estimated,Oct 2025,1420,No,1.3700,103.8450,Ang Mo Kio Avenue 5
+Chencharu Grove,Yishun,Standard,Estimated,Oct 2025,810,Yes,1.4180,103.8330,Chencharu Close
+Yishun Glade,Yishun,Standard,Estimated,Oct 2025,560,Yes,1.4220,103.8400,Yishun Ring Road
+Ping Yi Court,Bedok,Standard,Estimated,Oct 2025,850,Yes,1.3250,103.9210,Chai Chee Road
+Teban Heights,Jurong East,Standard,Estimated,Oct 2025,620,No,1.3210,103.7450,Teban Gardens Road
+Fernvale Plains,Sengkang,Standard,Estimated,Oct 2025,1030,Yes,1.3920,103.8760,Fernvale LRT
+Redhill Peaks,Bukit Merah,Prime,Confirmed,Feb 2026,1052,No,1.2895,103.8170,Redhill MRT
+Kim Keat Crest,Toa Payoh,Plus,Confirmed,Feb 2026,1151,No,1.3340,103.8580,Kim Keat Avenue
+Tampines Nova,Tampines,Plus,Confirmed,Feb 2026,255,Yes,1.3540,103.9450,Tampines Central 8
+Tampines Bliss,Tampines,Standard,Confirmed,Feb 2026,284,Yes,1.3580,103.9380,Tampines Avenue 2
+Sembawang Voyage,Sembawang,Standard,Confirmed,Feb 2026,1173,No,1.4530,103.8170,Sembawang Drive
+Sembawang Deck,Sembawang,Standard,Confirmed,Feb 2026,777,Yes,1.4540,103.8180,Admiralty Street
+Bishan Lakeview,Bishan,Prime,Estimated,Jun 2026,1210,No,1.3490,103.8390,Marymount MRT
+Ang Mo Kio Avenue 1,Ang Mo Kio,Plus,Estimated,Jun 2026,570,No,1.3640,103.8330,Bright Hill MRT
+Ang Mo Kio Avenue 2,Ang Mo Kio,Plus,Estimated,Jun 2026,480,No,1.3680,103.8360,Mayflower MRT
+Berlayar Estate,Bukit Merah,Prime,Estimated,Jun 2026,1960,No,1.2740,103.8100,Telok Blangah MRT
+Sembawang Drive,Sembawang,Standard,Estimated,Jun 2026,1130,No,1.4490,103.8170,Sembawang Drive
+Sungei Sembawang,Sembawang,Standard,Estimated,Jun 2026,870,No,1.4540,103.8230,Sungei Sembawang
+Woodlands Site,Woodlands,Standard,Estimated,Jun 2026,640,No,1.4350,103.7780,Marsiling MRT

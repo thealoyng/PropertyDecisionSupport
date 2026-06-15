@@ -1,0 +1,9 @@
+name,type,homes,nearby_mrt,amenities,horizon,lat,lon,search_term
+Dover-Medway,Housing,~6000,"Dover, Kent Ridge, one-north","Greater one-north knowledge hub, NUS, science parks",Prep works from 2025,1.3110,103.7860,Dover MRT
+Former Singapore Racecourse,Housing,~14000,Kranji,"New neighbourhood centre, leisure & sports, nature frontage",Long-term,1.4185,103.7530,Singapore Turf Club Kranji
+Newton neighbourhood,Housing,~5000,Newton,"Newton Circus, Scotts Rd & Monk's Hill clusters, central core",Long-term,1.3120,103.8380,Newton MRT
+Paterson / Orchard,Mixed-use,~1000,Orchard,"Integrated development above Orchard MRT; retail, office, homes",Long-term,1.3040,103.8320,Orchard MRT
+Paya Lebar Air Base,Housing,Township (800ha),"Future lines; Defu/Hougang first phase","Car-free commuter routes, new offices, 10-min neighbourhood",Over next decade,1.3600,103.9100,Paya Lebar Air Base
+Sembawang Shipyard,Mixed-use,Waterfront estate,Sembawang,"Maritime-themed waterfront district, North Coast Innovation Corridor",Yard closes 2028,1.4650,103.8330,Sembawang Shipyard
+Bishan sub-regional centre,Business node,,Bishan,"Office towers, polyclinic, pedestrian mall, hawker centre, AC bus interchange",Under study,1.3510,103.8490,Bishan MRT
+Jurong Bird Park / Jurong Hill,Business node,,Future Jurong Region Line,"39.2ha industrial estate, Jurong Lake District, Western Gateway",JRL by 2029,1.3190,103.7070,Jurong Hill
