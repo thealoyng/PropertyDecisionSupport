@@ -5,13 +5,13 @@ Combine & clean all HDB resale data (1990 -> present)
 import re
 import pandas as pd
 
-UP = "data/raw/"
+UP = "raw/"
 FILES = [
-    "Resale_Flat_Prices__Based_on_Approval_Date___1990_-_1999.csv",
-    "Resale_Flat_Prices__Based_on_Approval_Date___2000_-_Feb_2012.csv",
-    "Resale_Flat_Prices__Based_on_Registration_Date___From_Mar_2012_to_Dec_2014.csv",
-    "Resale_Flat_Prices__Based_on_Registration_Date___From_Jan_2015_to_Dec_2016.csv",
-    "Resale_flat_prices_based_on_registration_date_from_Jan-2017_onwards.csv",
+    "Resale Flat Prices (Based on Approval Date), 1990 - 1999.csv",
+    "Resale Flat Prices (Based on Approval Date), 2000 - Feb 2012.csv",
+    "Resale Flat Prices (Based on Registration Date), From Mar 2012 to Dec 2014.csv",
+    "Resale Flat Prices (Based on Registration Date), From Jan 2015 to Dec 2016.csv",
+    "Resale flat prices based on registration date from Jan-2017 onwards.csv",
 ]
 
 def parse_remaining_lease(val):

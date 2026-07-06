@@ -1,14 +1,15 @@
 """
 BTO Buddy — Phase 3: Streamlit App
 ===================================
-The web app, with four tabs:
+The web app, with five tabs:
   1. Trends dashboard  — historical price/volume charts
   2. Location map      — BTO projects colour-coded by classification
-  3. Payment breakdown — staged BTO payment timeline + grants
-  4. Forecast          — Prophet time-series price projection
+  3. Explorer map      — interactive pydeck map with block-level stats
+  4. Payment breakdown — staged BTO payment timeline + grants
+  5. Forecast          — Prophet time-series price projection
 
 Run locally:
-    pip install streamlit pandas joblib plotly folium streamlit-folium
+    pip install streamlit pandas joblib plotly folium streamlit-folium pydeck
     streamlit run app.py
 
 Expected files (adjust paths if your layout differs):
@@ -16,9 +17,11 @@ Expected files (adjust paths if your layout differs):
     data/resale_clean_1990_present.csv
 """
 import os
+import numpy as np
 import pandas as pd
 import streamlit as st
 import plotly.express as px
+import pydeck as pdk
 import folium
 from streamlit_folium import st_folium
 
@@ -46,8 +49,9 @@ FLAT_TYPES = sorted(df["flat_type"].dropna().unique())
 st.title("🏠 BTO Buddy")
 st.caption("Make sense of the HDB resale market — prices, trends, locations, and affordability.")
 
-tab2, tab3, tab4, tab5 = st.tabs(
-    ["📈 Trends", "🗺️ Location map", "🧮 Payment breakdown", "🔮 Forecast"]
+tab2, tab3, tab_explorer, tab4, tab5 = st.tabs(
+    ["📈 Trends", "🗺️ Location map", "🧭 Explorer map",
+     "🧮 Payment breakdown", "🔮 Forecast"]
 )
 
 # ===============================================================
@@ -288,6 +292,271 @@ with tab3:
                "Future growth areas are from URA's Draft Master Plan 2025 — indicative "
                "and subject to change. Coordinates are approximate unless refined via "
                "OneMap (src/geocode_bto.py). Verify at hdb.gov.sg and ura.gov.sg.")
+
+# ===============================================================
+# TAB — EXPLORER MAP (Interactive pydeck)
+# ===============================================================
+with tab_explorer:
+    st.subheader("Resale Explorer Map")
+    st.write("Zoom and pan around Singapore to explore resale prices at the "
+             "block or town level. Hover over any point to see detailed stats.")
+
+    # Town centroids for fallback / town-level aggregation
+    TOWN_CENTROIDS = {
+        "ANG MO KIO": (1.3691, 103.8454), "BEDOK": (1.3236, 103.9273),
+        "BISHAN": (1.3526, 103.8491), "BUKIT BATOK": (1.3590, 103.7637),
+        "BUKIT MERAH": (1.2819, 103.8239), "BUKIT PANJANG": (1.3774, 103.7719),
+        "BUKIT TIMAH": (1.3294, 103.8021), "CENTRAL AREA": (1.2789, 103.8536),
+        "CHOA CHU KANG": (1.3840, 103.7470), "CLEMENTI": (1.3162, 103.7649),
+        "GEYLANG": (1.3201, 103.8918), "HOUGANG": (1.3612, 103.8863),
+        "JURONG EAST": (1.3329, 103.7436), "JURONG WEST": (1.3404, 103.7090),
+        "KALLANG/WHAMPOA": (1.3100, 103.8651), "LIM CHU KANG": (1.4305, 103.7172),
+        "MARINE PARADE": (1.3020, 103.9072), "PASIR RIS": (1.3721, 103.9474),
+        "PUNGGOL": (1.4053, 103.9024), "QUEENSTOWN": (1.2942, 103.7861),
+        "SEMBAWANG": (1.4491, 103.8185), "SENGKANG": (1.3868, 103.8914),
+        "SERANGOON": (1.3554, 103.8679), "TAMPINES": (1.3496, 103.9568),
+        "TOA PAYOH": (1.3343, 103.8563), "WOODLANDS": (1.4382, 103.7891),
+        "YISHUN": (1.4304, 103.8354),
+    }
+
+    @st.cache_data
+    def load_coords():
+        """Load block-level geocoded coordinates if available."""
+        try:
+            coords = pd.read_csv("data/address_coords.csv")
+            coords["block"] = coords["block"].astype(str)
+            hit = coords["lat"].notna().sum()
+            if hit > 0:
+                return coords
+        except FileNotFoundError:
+            pass
+        return None
+
+    coords_df = load_coords()
+    has_block_coords = coords_df is not None
+
+    # ── Controls ──
+    ctrl1, ctrl2, ctrl3 = st.columns([2, 2, 2])
+    min_yr, max_yr = int(df["year"].min()), int(df["year"].max())
+    with ctrl1:
+        yr_range = st.slider("Year range", min_yr, max_yr,
+                              (max(min_yr, max_yr - 5), max_yr),
+                              key="explorer_yr")
+    with ctrl2:
+        sel_flat = st.multiselect("Flat type", FLAT_TYPES, default=FLAT_TYPES,
+                                   key="explorer_flat")
+    with ctrl3:
+        color_by = st.selectbox("Colour by",
+                                ["Median price/sqm", "Median price",
+                                 "Transaction volume", "Avg remaining lease"],
+                                key="explorer_color")
+
+    layer_mode = st.radio("Map layer", ["Heatmap", "Hex bins", "Scatter"],
+                          horizontal=True, key="explorer_layer")
+
+    # ── Animation controls ──
+    anim_col1, anim_col2 = st.columns([1, 5])
+    with anim_col1:
+        play = st.button("▶ Play", key="explorer_play")
+    with anim_col2:
+        anim_year = st.slider("Animation year", min_yr, max_yr, max_yr,
+                               key="explorer_anim_yr")
+
+    if play:
+        # Auto-advance year via session state
+        if "anim_playing" not in st.session_state:
+            st.session_state.anim_playing = True
+        if st.session_state.get("anim_playing"):
+            import time
+            next_yr = anim_year + 1
+            if next_yr > max_yr:
+                next_yr = min_yr
+                st.session_state.anim_playing = False
+            st.session_state.explorer_anim_yr = next_yr
+            time.sleep(1.0)
+            st.rerun()
+
+    # ── Filter data ──
+    mask = (df["year"] >= yr_range[0]) & (df["year"] <= yr_range[1])
+    if sel_flat:
+        mask &= df["flat_type"].isin(sel_flat)
+    filt = df[mask].copy()
+
+    if len(filt) == 0:
+        st.warning("No data for the selected filters.")
+    else:
+        # ── Build aggregated map data ──
+        if has_block_coords:
+            # Block-level: join coords
+            filt["block"] = filt["block"].astype(str)
+            merged = filt.merge(coords_df[["block", "street_name", "lat", "lon"]],
+                                on=["block", "street_name"], how="left")
+            # For blocks without coords, assign town centroid
+            for town, (lat, lon) in TOWN_CENTROIDS.items():
+                m = (merged["town"] == town) & merged["lat"].isna()
+                merged.loc[m, "lat"] = lat
+                merged.loc[m, "lon"] = lon
+            merged = merged.dropna(subset=["lat", "lon"])
+            # Aggregate by block
+            agg = (merged.groupby(["block", "street_name", "lat", "lon", "town"])
+                   .agg(
+                       median_price=("resale_price", "median"),
+                       median_psm=("price_per_sqm", "median"),
+                       volume=("resale_price", "count"),
+                       avg_lease=("remaining_lease_yrs", "mean"),
+                   ).reset_index())
+        else:
+            # Town-level fallback
+            agg = (filt.groupby("town")
+                   .agg(
+                       median_price=("resale_price", "median"),
+                       median_psm=("price_per_sqm", "median"),
+                       volume=("resale_price", "count"),
+                       avg_lease=("remaining_lease_yrs", "mean"),
+                   ).reset_index())
+            agg["lat"] = agg["town"].map(lambda t: TOWN_CENTROIDS.get(t, (1.35, 103.82))[0])
+            agg["lon"] = agg["town"].map(lambda t: TOWN_CENTROIDS.get(t, (1.35, 103.82))[1])
+            agg["block"] = ""
+            agg["street_name"] = agg["town"]
+
+        # Round for display
+        for c in ["median_price", "median_psm", "avg_lease"]:
+            agg[c] = agg[c].round(0)
+
+        # ── Compute 5-yr trend if possible ──
+        if yr_range[1] - yr_range[0] >= 3:
+            mid = (yr_range[0] + yr_range[1]) // 2
+            if has_block_coords:
+                grp = ["block", "street_name"]
+            else:
+                grp = ["town"]
+            early = filt[filt["year"] <= mid].groupby(grp)["price_per_sqm"].median()
+            late = filt[filt["year"] > mid].groupby(grp)["price_per_sqm"].median()
+            growth = ((late - early) / early * 100).round(1).reset_index()
+            growth.columns = list(grp) + ["trend_pct"]
+            agg = agg.merge(growth, on=grp, how="left")
+            agg["trend_pct"] = agg["trend_pct"].fillna(0)
+        else:
+            agg["trend_pct"] = 0.0
+
+        # ── Colour mapping ──
+        col_map = {
+            "Median price/sqm": "median_psm",
+            "Median price": "median_price",
+            "Transaction volume": "volume",
+            "Avg remaining lease": "avg_lease",
+        }
+        color_col = col_map[color_by]
+        vmin = agg[color_col].quantile(0.05)
+        vmax = agg[color_col].quantile(0.95)
+        if vmax == vmin:
+            vmax = vmin + 1
+
+        def val_to_rgb(val):
+            """Map a value to a green-yellow-red colour gradient."""
+            t = np.clip((val - vmin) / (vmax - vmin), 0, 1)
+            r = int(255 * t)
+            g = int(255 * (1 - t))
+            return [r, g, 60, 180]
+
+        agg["color"] = agg[color_col].apply(val_to_rgb)
+
+        # ── Tooltip ──
+        agg["tooltip_text"] = agg.apply(
+            lambda r: (
+                f"{'Blk ' + str(r['block']) + ', ' if r['block'] else ''}"
+                f"{r.get('street_name', r.get('town', ''))}\n"
+                f"Town: {r.get('town', 'N/A')}\n"
+                f"Median Price: ${r['median_price']:,.0f}\n"
+                f"Price/sqm: ${r['median_psm']:,.0f}\n"
+                f"Transactions: {int(r['volume'])}\n"
+                f"Avg Lease: {r['avg_lease']:.0f} yrs\n"
+                f"Trend: {r['trend_pct']:+.1f}%"
+            ), axis=1)
+
+        # ── Build pydeck layers ──
+        view = pdk.ViewState(latitude=1.3521, longitude=103.8198,
+                             zoom=10.5, pitch=35)
+
+        if layer_mode == "Heatmap":
+            layer = pdk.Layer(
+                "HeatmapLayer",
+                data=agg,
+                get_position=["lon", "lat"],
+                get_weight=color_col,
+                radiusPixels=50,
+                intensity=1,
+                threshold=0.1,
+            )
+        elif layer_mode == "Hex bins":
+            layer = pdk.Layer(
+                "HexagonLayer",
+                data=agg,
+                get_position=["lon", "lat"],
+                radius=400,
+                elevation_scale=4,
+                elevation_range=[0, 1000],
+                extruded=True,
+                pickable=True,
+                auto_highlight=True,
+            )
+        else:  # Scatter
+            max_vol = agg["volume"].quantile(0.95) if len(agg) > 0 else 1
+            agg["radius"] = (agg["volume"] / max(max_vol, 1) * 300).clip(30, 500)
+            layer = pdk.Layer(
+                "ScatterplotLayer",
+                data=agg,
+                get_position=["lon", "lat"],
+                get_fill_color="color",
+                get_radius="radius",
+                pickable=True,
+                auto_highlight=True,
+                opacity=0.7,
+            )
+
+        tooltip = {"text": "{tooltip_text}"} if layer_mode != "Hex bins" else {
+            "text": "Hexagon\nCount: {elevationValue}"
+        }
+
+        deck = pdk.Deck(
+            layers=[layer],
+            initial_view_state=view,
+            tooltip=tooltip,
+            map_style="mapbox://styles/mapbox/light-v10",
+        )
+        st.pydeck_chart(deck, use_container_width=True)
+
+        # ── Stats panel ──
+        st.divider()
+        s1, s2, s3, s4 = st.columns(4)
+        s1.metric("Total transactions", f"{int(agg['volume'].sum()):,}")
+        s2.metric("Median price", f"${agg['median_price'].median():,.0f}")
+        s3.metric("Median $/sqm", f"${agg['median_psm'].median():,.0f}")
+        s4.metric("Avg lease", f"{agg['avg_lease'].mean():.0f} yrs")
+
+        # Top streets by volume
+        if has_block_coords:
+            label = "Top 5 streets by volume"
+            top = (agg.groupby("street_name")["volume"].sum()
+                   .sort_values(ascending=False).head(5))
+        else:
+            label = "Top 5 towns by volume"
+            top = agg.nlargest(5, "volume").set_index("town")["volume"]
+
+        with st.expander(label):
+            st.bar_chart(top)
+
+        # Trend sparkline
+        trend_data = (filt.groupby(filt["month"].dt.to_period("Q").dt.to_timestamp())
+                      ["resale_price"].median().reset_index())
+        trend_data.columns = ["quarter", "median_price"]
+        with st.expander("Price trend for selection"):
+            st.line_chart(trend_data.set_index("quarter")["median_price"])
+
+        data_mode = "block-level" if has_block_coords else "town-level (run geocode_resale.py for block detail)"
+        st.caption(f"Map granularity: {data_mode} | "
+                   f"Showing {yr_range[0]}–{yr_range[1]} | "
+                   f"{len(agg):,} points")
 
 # ===============================================================
 # TAB 4 — AFFORDABILITY CALCULATOR
