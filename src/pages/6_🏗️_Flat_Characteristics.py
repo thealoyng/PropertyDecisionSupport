@@ -80,7 +80,7 @@ fig1 = px.line(
     title="Yearly Median Resale Price by Flat Type",
 )
 fig1.update_layout(legend_title_text="Flat Type", hovermode="x unified")
-st.plotly_chart(fig1, use_container_width=True)
+st.plotly_chart(fig1, width='stretch')
 
 # =====================================================================
 # 2. Floor area vs price scatter
@@ -105,7 +105,7 @@ fig2 = px.scatter(
     title="Floor Area vs Resale Price (with OLS trendline per flat type)",
 )
 fig2.update_layout(legend_title_text="Flat Type")
-st.plotly_chart(fig2, use_container_width=True)
+st.plotly_chart(fig2, width='stretch')
 
 # =====================================================================
 # 3. Storey premium analysis
@@ -148,7 +148,7 @@ fig3.update_layout(
     yaxis_title="Median Price per sqm ($)",
     showlegend=False,
 )
-st.plotly_chart(fig3, use_container_width=True)
+st.plotly_chart(fig3, width='stretch')
 
 # =====================================================================
 # 4. Flat model ranking (recent 5 years)
@@ -181,7 +181,7 @@ fig4 = px.bar(
 )
 fig4.update_traces(texttemplate="$%{text:,.0f}", textposition="outside")
 fig4.update_layout(yaxis_categoryorder="total ascending", coloraxis_showscale=False)
-st.plotly_chart(fig4, use_container_width=True)
+st.plotly_chart(fig4, width='stretch')
 
 # =====================================================================
 # 5. Flat type mix evolution
@@ -214,7 +214,7 @@ fig5.update_layout(
     yaxis_title="% of Transactions",
     hovermode="x unified",
 )
-st.plotly_chart(fig5, use_container_width=True)
+st.plotly_chart(fig5, width='stretch')
 
 # =====================================================================
 # 6. Floor area trends by flat type over time
@@ -244,7 +244,7 @@ fig6 = px.line(
     title="Median Floor Area by Flat Type Over Time",
 )
 fig6.update_layout(legend_title_text="Flat Type", hovermode="x unified")
-st.plotly_chart(fig6, use_container_width=True)
+st.plotly_chart(fig6, width='stretch')
 
 # =====================================================================
 # 7. Storey distribution by era
@@ -285,7 +285,7 @@ fig7.update_layout(
     legend_title_text="Era",
     bargap=0.1,
 )
-st.plotly_chart(fig7, use_container_width=True)
+st.plotly_chart(fig7, width='stretch')
 
 # ── Footer ───────────────────────────────────────────────────────
 st.divider()

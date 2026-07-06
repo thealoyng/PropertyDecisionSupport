@@ -73,13 +73,13 @@ with tab2:
         fig = px.line(trend, x="quarter", y="resale_price", color="town",
                       labels={"resale_price": "Median price ($)", "quarter": ""},
                       title=f"Median {sel_type} price over time")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
     # Volume by year
     vol = df.groupby(df["month"].dt.year).size().reset_index(name="transactions")
     vol.columns = ["year", "transactions"]
     fig2 = px.bar(vol, x="year", y="transactions", title="Resale transactions per year")
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig2, width='stretch')
 
 # ===============================================================
 # TAB 3 — LOCATION MAP (BTO classification)
@@ -524,7 +524,7 @@ with tab_explorer:
             tooltip=tooltip,
             map_style="mapbox://styles/mapbox/light-v10",
         )
-        st.pydeck_chart(deck, use_container_width=True)
+        st.pydeck_chart(deck, width='stretch')
 
         # ── Stats panel ──
         st.divider()
@@ -788,7 +788,7 @@ with tab5:
                             showlegend=True)
             fig.update_layout(height=420, margin=dict(t=10, b=0, l=0, r=0),
                               yaxis_title="Median price ($)")
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
 
             # a couple of headline numbers
             last_actual_year = ts["ds"].max().year

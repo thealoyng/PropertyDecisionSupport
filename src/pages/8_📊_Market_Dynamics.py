@@ -154,7 +154,7 @@ with tab_scatter:
         margin=dict(t=30),
         showlegend=False,
     )
-    st.plotly_chart(fig1, use_container_width=True)
+    st.plotly_chart(fig1, width='stretch')
 
     corr = annual["txn_count"].corr(annual["median_price"])
     st.info(
@@ -229,7 +229,7 @@ with tab_cycle:
     )
     fig2.update_yaxes(title_text="Median price ($)", secondary_y=False)
     fig2.update_yaxes(title_text="Transaction count", secondary_y=True)
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig2, width='stretch')
 
 # ================================================================
 # 3. Transaction concentration — top 5 towns share over time
@@ -279,7 +279,7 @@ with tab_conc:
         ),
         margin=dict(t=30),
     )
-    st.plotly_chart(fig3, use_container_width=True)
+    st.plotly_chart(fig3, width='stretch')
 
     st.info(
         "**For buyers:** Towns with consistently high transaction share "
@@ -321,7 +321,7 @@ with tab_age:
             marker=dict(size=6),
         )
         fig4.update_layout(margin=dict(t=30))
-        st.plotly_chart(fig4, use_container_width=True)
+        st.plotly_chart(fig4, width='stretch')
 
         latest_age = age_annual[age_annual["year"] == latest_year][
             "median_age"
@@ -428,7 +428,7 @@ with tab_momentum:
         ),
         margin=dict(t=30),
     )
-    st.plotly_chart(fig5, use_container_width=True)
+    st.plotly_chart(fig5, width='stretch')
 
     # current signal
     if len(mom) >= 12:
@@ -482,7 +482,7 @@ with tab_supply:
         margin=dict(t=30),
         xaxis=dict(tickangle=-45),
     )
-    st.plotly_chart(fig6, use_container_width=True)
+    st.plotly_chart(fig6, width='stretch')
 
     # summary insight
     top_supply = supply.groupby("town")["txn"].sum().nlargest(3)
@@ -544,7 +544,7 @@ with tab_premium:
         ),
         margin=dict(t=30),
     )
-    st.plotly_chart(fig7, use_container_width=True)
+    st.plotly_chart(fig7, width='stretch')
 
     # latest year breakdown
     latest_prem = premium[premium["year"] == latest_year]

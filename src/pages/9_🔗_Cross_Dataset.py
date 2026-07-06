@@ -154,7 +154,7 @@ with tab_bto_vs:
             ),
             margin=dict(t=30),
         )
-        st.plotly_chart(fig1, use_container_width=True)
+        st.plotly_chart(fig1, width='stretch')
 
         # summary statistics
         bto_med = psm.loc[psm["has_bto"] == "BTO town", "median_psm"].median()
@@ -215,7 +215,7 @@ with tab_cls:
                 },
             )
             fig2.update_layout(showlegend=False, margin=dict(t=30))
-            st.plotly_chart(fig2, use_container_width=True)
+            st.plotly_chart(fig2, width='stretch')
 
             # summary table
             cls_summary = (
@@ -231,7 +231,7 @@ with tab_cls:
             ]
             cls_summary["Median PSM"] = cls_summary["Median PSM"].apply(fmt_price)
             cls_summary["Mean PSM"] = cls_summary["Mean PSM"].apply(fmt_price)
-            st.dataframe(cls_summary, hide_index=True, use_container_width=True)
+            st.dataframe(cls_summary, hide_index=True, width='stretch')
 
 # ================================================================
 # 3. MRT line analysis — average resale PSM per line
@@ -303,7 +303,7 @@ with tab_mrt_line:
                 xaxis_title="MRT line",
                 margin=dict(t=30),
             )
-            st.plotly_chart(fig3, use_container_width=True)
+            st.plotly_chart(fig3, width='stretch')
 
             # per-station detail
             with st.expander("Station-level detail"):
@@ -324,7 +324,7 @@ with tab_mrt_line:
                         }
                     ),
                     hide_index=True,
-                    use_container_width=True,
+                    width='stretch',
                 )
 
 # ================================================================
@@ -490,7 +490,7 @@ with tab_future:
             )
 
         result_df = pd.DataFrame(rows)
-        st.dataframe(result_df, hide_index=True, use_container_width=True)
+        st.dataframe(result_df, hide_index=True, width='stretch')
 
 # ================================================================
 # 6. BTO units planned vs resale volume
@@ -569,7 +569,7 @@ with tab_supply:
                 ),
                 margin=dict(t=30),
             )
-            st.plotly_chart(fig6, use_container_width=True)
+            st.plotly_chart(fig6, width='stretch')
 
             # Ratio table
             merged["supply_ratio"] = (
@@ -586,7 +586,7 @@ with tab_supply:
                 }
             )
             with st.expander("Supply-to-volume ratio table"):
-                st.dataframe(ratio_tbl, hide_index=True, use_container_width=True)
+                st.dataframe(ratio_tbl, hide_index=True, width='stretch')
 
 # ================================================================
 # 7. MRT interchange premium
@@ -645,7 +645,7 @@ with tab_interchange:
             },
         )
         fig7.update_layout(showlegend=False, margin=dict(t=30))
-        st.plotly_chart(fig7, use_container_width=True)
+        st.plotly_chart(fig7, width='stretch')
 
         # Summary stats
         ic_med = town_ic.loc[
@@ -674,5 +674,5 @@ with tab_interchange:
                     }
                 ),
                 hide_index=True,
-                use_container_width=True,
+                width='stretch',
             )

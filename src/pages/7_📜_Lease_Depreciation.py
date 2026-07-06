@@ -188,7 +188,7 @@ with tab_scatter:
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
         margin=dict(t=30),
     )
-    st.plotly_chart(fig1, use_container_width=True)
+    st.plotly_chart(fig1, width='stretch')
 
 # ================================================================
 # 2. Depreciation curves by flat type
@@ -229,7 +229,7 @@ with tab_curves:
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
         margin=dict(t=30),
     )
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig2, width='stretch')
 
 # ================================================================
 # 3. Depreciation by town (user-selectable)
@@ -286,7 +286,7 @@ with tab_town:
             ),
             margin=dict(t=30),
         )
-        st.plotly_chart(fig3, use_container_width=True)
+        st.plotly_chart(fig3, width='stretch')
 
 # ================================================================
 # 4. Lease threshold analysis — ≥60 vs <60 years
@@ -346,7 +346,7 @@ with tab_threshold:
         bgcolor="#f8fafc",
     )
 
-    st.plotly_chart(fig4, use_container_width=True)
+    st.plotly_chart(fig4, width='stretch')
 
     # supporting stats table
     stats = (
@@ -361,7 +361,7 @@ with tab_threshold:
             }
         )
     )
-    st.dataframe(stats.style.format("{:,.0f}"), use_container_width=True)
+    st.dataframe(stats.style.format("{:,.0f}"), width='stretch')
 
 # ================================================================
 # 5. Flat age vs price per sqm — cohorts by decade
@@ -412,7 +412,7 @@ with tab_age:
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
         margin=dict(t=30),
     )
-    st.plotly_chart(fig5, use_container_width=True)
+    st.plotly_chart(fig5, width='stretch')
 
 # ================================================================
 # 6. Annual depreciation rate by town (slope, recent 5 years)
@@ -458,7 +458,7 @@ with tab_depr_rate:
         height=max(450, len(slopes_df) * 22),
         margin=dict(t=20, l=140),
     )
-    st.plotly_chart(fig6, use_container_width=True)
+    st.plotly_chart(fig6, width='stretch')
 
     st.info(
         "A slope of **+50** means each additional year of remaining lease "
@@ -503,4 +503,4 @@ with tab_volume:
         margin=dict(t=20),
     )
     fig7.update_traces(texttemplate="%{text:,.0f}", textposition="outside")
-    st.plotly_chart(fig7, use_container_width=True)
+    st.plotly_chart(fig7, width='stretch')

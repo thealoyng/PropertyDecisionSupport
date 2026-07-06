@@ -91,7 +91,7 @@ try:
 except Exception:
     pass  # skip KDE if too few data points
 
-st.plotly_chart(fig1, use_container_width=True)
+st.plotly_chart(fig1, width='stretch')
 
 st.divider()
 
@@ -114,7 +114,7 @@ fig2 = px.box(
     color_discrete_sequence=px.colors.qualitative.Safe,
 )
 fig2.update_layout(showlegend=False)
-st.plotly_chart(fig2, use_container_width=True)
+st.plotly_chart(fig2, width='stretch')
 
 st.divider()
 
@@ -140,7 +140,7 @@ fig3 = px.histogram(
 )
 fig3.update_layout(height=700, bargap=0.03, showlegend=False)
 fig3.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
-st.plotly_chart(fig3, use_container_width=True)
+st.plotly_chart(fig3, width='stretch')
 
 st.divider()
 
@@ -161,7 +161,7 @@ fig4 = px.histogram(
     color_discrete_sequence=["#AB63FA"],
 )
 fig4.update_layout(bargap=0.03, showlegend=False)
-st.plotly_chart(fig4, use_container_width=True)
+st.plotly_chart(fig4, width='stretch')
 
 st.divider()
 
@@ -199,7 +199,7 @@ try:
 except Exception:
     pass
 
-st.plotly_chart(fig5, use_container_width=True)
+st.plotly_chart(fig5, width='stretch')
 
 st.divider()
 
@@ -227,7 +227,7 @@ fig6.add_vline(
     annotation_font_color="red",
 )
 fig6.update_layout(bargap=0.03, showlegend=False)
-st.plotly_chart(fig6, use_container_width=True)
+st.plotly_chart(fig6, width='stretch')
 
 st.divider()
 
@@ -249,7 +249,7 @@ fig7 = px.histogram(
     color_discrete_sequence=["#FF6692"],
 )
 fig7.update_layout(bargap=0.02, showlegend=False)
-st.plotly_chart(fig7, use_container_width=True)
+st.plotly_chart(fig7, width='stretch')
 
 st.divider()
 
@@ -285,7 +285,7 @@ with col_pie:
         hole=0.35,
     )
     fig8a.update_traces(textinfo="label+percent", textposition="outside")
-    st.plotly_chart(fig8a, use_container_width=True)
+    st.plotly_chart(fig8a, width='stretch')
 
 with col_bar:
     fig8b = px.bar(
@@ -299,7 +299,7 @@ with col_bar:
     )
     fig8b.update_traces(texttemplate="%{text:.1f}%", textposition="outside")
     fig8b.update_layout(showlegend=False, yaxis_title="")
-    st.plotly_chart(fig8b, use_container_width=True)
+    st.plotly_chart(fig8b, width='stretch')
 
 st.divider()
 
@@ -330,7 +330,7 @@ fig9 = px.bar(
     color_discrete_sequence=["#00CC96"],
 )
 fig9.update_layout(height=700, showlegend=False, yaxis_title="")
-st.plotly_chart(fig9, use_container_width=True)
+st.plotly_chart(fig9, width='stretch')
 
 st.divider()
 
@@ -363,7 +363,7 @@ fig10 = px.bar(
     color_discrete_sequence=["#EF553B"],
 )
 fig10.update_layout(height=550, showlegend=False, yaxis_title="")
-st.plotly_chart(fig10, use_container_width=True)
+st.plotly_chart(fig10, width='stretch')
 
 # ── footer ───────────────────────────────────────────────────────
 st.divider()

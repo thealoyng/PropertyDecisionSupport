@@ -143,7 +143,7 @@ with tab_price:
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
         margin=dict(t=30),
     )
-    st.plotly_chart(fig1, use_container_width=True)
+    st.plotly_chart(fig1, width='stretch')
 
     # ────────────────────────────────────────────────────────────
     # 2. Year-over-year price growth rate
@@ -166,7 +166,7 @@ with tab_price:
         xaxis_title="",
         margin=dict(t=20),
     )
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig2, width='stretch')
 
 # ================================================================
 # 4. Transaction volume by month
@@ -200,7 +200,7 @@ with tab_volume:
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
         margin=dict(t=30),
     )
-    st.plotly_chart(fig4, use_container_width=True)
+    st.plotly_chart(fig4, width='stretch')
 
 # ================================================================
 # 3. Seasonal decomposition (month-of-year pattern, post-2000)
@@ -241,7 +241,7 @@ with tab_seasonal:
         ),
         margin=dict(t=20),
     )
-    st.plotly_chart(fig3, use_container_width=True)
+    st.plotly_chart(fig3, width='stretch')
 
     # deviation from annual mean
     overall_median = seasonal["median_price"].mean()
@@ -266,7 +266,7 @@ with tab_seasonal:
         showlegend=False,
         margin=dict(t=20),
     )
-    st.plotly_chart(fig3b, use_container_width=True)
+    st.plotly_chart(fig3b, width='stretch')
 
 # ================================================================
 # 6. Annotated timeline with policy events
@@ -313,7 +313,7 @@ with tab_policy:
         margin=dict(t=30, r=20),
         showlegend=False,
     )
-    st.plotly_chart(fig6, use_container_width=True)
+    st.plotly_chart(fig6, width='stretch')
 
     with st.expander("Policy events reference"):
         for date_str, desc in POLICY_EVENTS:
@@ -359,7 +359,7 @@ with tab_heatmap:
         height=max(500, len(pivot) * 22),
         margin=dict(t=30),
     )
-    st.plotly_chart(fig5, use_container_width=True)
+    st.plotly_chart(fig5, width='stretch')
 
 # ================================================================
 # 7. Quarterly median price by flat type
@@ -392,7 +392,7 @@ with tab_flat:
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
         margin=dict(t=30),
     )
-    st.plotly_chart(fig7, use_container_width=True)
+    st.plotly_chart(fig7, width='stretch')
 
 # ================================================================
 # 8. Price index (rebased to 100)
@@ -461,6 +461,6 @@ with tab_index:
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
             margin=dict(t=30),
         )
-        st.plotly_chart(fig8, use_container_width=True)
+        st.plotly_chart(fig8, width='stretch')
     else:
         st.info("Select at least one town to display the index chart.")

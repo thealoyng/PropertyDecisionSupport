@@ -305,7 +305,7 @@ with tab_bump:
         margin=dict(t=40),
         height=550,
     )
-    st.plotly_chart(fig_bump, use_container_width=True)
+    st.plotly_chart(fig_bump, width='stretch')
 
 # ================================================================
 # 3. Price convergence / divergence
@@ -367,7 +367,7 @@ with tab_converge:
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
         margin=dict(t=40),
     )
-    st.plotly_chart(fig_conv, use_container_width=True)
+    st.plotly_chart(fig_conv, width='stretch')
 
     # interpretation
     first_spread = yearly_town_medians["spread"].iloc[0]
@@ -413,7 +413,7 @@ with tab_heatmap:
         height=max(500, len(vol_pivot) * 22),
         margin=dict(t=30),
     )
-    st.plotly_chart(fig_heat, use_container_width=True)
+    st.plotly_chart(fig_heat, width='stretch')
 
 # ================================================================
 # 5. Hot vs Cold towns (recent 3-year growth)
@@ -464,7 +464,7 @@ with tab_hotcold:
             height=max(450, len(growth_sorted) * 24),
             margin=dict(t=30, l=120),
         )
-        st.plotly_chart(fig_hc, use_container_width=True)
+        st.plotly_chart(fig_hc, width='stretch')
     else:
         st.warning("Insufficient data to compute recent growth.")
 
@@ -540,7 +540,7 @@ with tab_mrt_prox:
             margin=dict(t=30),
             height=550,
         )
-        st.plotly_chart(fig_prox, use_container_width=True)
+        st.plotly_chart(fig_prox, width='stretch')
 
         # show correlation stat
         corr = prox["dist_km"].corr(prox["median_psm"])
@@ -645,7 +645,7 @@ with tab_mrt_line:
                 margin=dict(t=40, b=120),
                 height=550,
             )
-            st.plotly_chart(fig_line, use_container_width=True)
+            st.plotly_chart(fig_line, width='stretch')
 
             # summary table
             with st.expander("Station-town mapping details"):
@@ -662,7 +662,7 @@ with tab_mrt_line:
                         }
                     )
                     .style.format({"Median $/sqm": "${:,.0f}", "Distance (km)": "{:.2f}"}),
-                    use_container_width=True,
+                    width='stretch',
                 )
         else:
             st.info("Select at least one MRT line to display.")

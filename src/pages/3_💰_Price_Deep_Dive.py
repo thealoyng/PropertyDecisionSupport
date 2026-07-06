@@ -71,7 +71,7 @@ fig_violin = px.violin(
     },
 )
 fig_violin.update_layout(showlegend=False, height=550)
-st.plotly_chart(fig_violin, use_container_width=True)
+st.plotly_chart(fig_violin, width='stretch')
 
 # =====================================================================
 # 2. Box plots — price by town (top 15 by median)
@@ -97,7 +97,7 @@ fig_box = px.box(
     category_orders={"town": town_order},
 )
 fig_box.update_layout(showlegend=False, height=600)
-st.plotly_chart(fig_box, use_container_width=True)
+st.plotly_chart(fig_box, width='stretch')
 
 # =====================================================================
 # 3. Price per sqm by town — bar chart (normalised comparison)
@@ -131,7 +131,7 @@ fig_psqm.update_layout(
     height=650,
     coloraxis_showscale=False,
 )
-st.plotly_chart(fig_psqm, use_container_width=True)
+st.plotly_chart(fig_psqm, width='stretch')
 
 # =====================================================================
 # 4. Million-dollar flat analysis
@@ -159,7 +159,7 @@ else:
         title="Million-Dollar Transactions per Year",
     )
     fig_mil_yr.update_layout(height=400)
-    col_a.plotly_chart(fig_mil_yr, use_container_width=True)
+    col_a.plotly_chart(fig_mil_yr, width='stretch')
 
     # 4b — towns with the most million-dollar flats
     mil_town = (
@@ -174,7 +174,7 @@ else:
         title="Million-Dollar Flats by Town",
     )
     fig_mil_town.update_layout(yaxis={"categoryorder": "total ascending"}, height=400)
-    col_b.plotly_chart(fig_mil_town, use_container_width=True)
+    col_b.plotly_chart(fig_mil_town, width='stretch')
 
     # 4c — which flat types reach $1M
     mil_type = (
@@ -189,7 +189,7 @@ else:
         title="Million-Dollar Flats by Flat Type",
     )
     fig_mil_type.update_layout(showlegend=False, height=400)
-    st.plotly_chart(fig_mil_type, use_container_width=True)
+    st.plotly_chart(fig_mil_type, width='stretch')
 
 st.divider()
 
@@ -257,7 +257,7 @@ fig_pct.update_layout(
     height=550,
     legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
 )
-st.plotly_chart(fig_pct, use_container_width=True)
+st.plotly_chart(fig_pct, width='stretch')
 
 # =====================================================================
 # 6. Price range (p90 − p10) by town per year — heatmap (volatility)
@@ -294,7 +294,7 @@ fig_spread = px.imshow(
     color_continuous_scale="YlOrRd",
 )
 fig_spread.update_layout(height=700)
-st.plotly_chart(fig_spread, use_container_width=True)
+st.plotly_chart(fig_spread, width='stretch')
 
 # =====================================================================
 # 7. Median price heatmap — town × flat_type (recent 3 years)
@@ -334,7 +334,7 @@ fig_heat = px.imshow(
     text_auto=".0f",
 )
 fig_heat.update_layout(height=750)
-st.plotly_chart(fig_heat, use_container_width=True)
+st.plotly_chart(fig_heat, width='stretch')
 
 # ── footer ───────────────────────────────────────────────────────
 st.divider()
