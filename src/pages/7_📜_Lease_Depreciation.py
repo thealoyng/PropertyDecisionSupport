@@ -130,7 +130,7 @@ st.divider()
 ) = st.tabs(
     [
         "🔵 Price vs Lease (scatter)",
-        "📉 Depreciation curves",
+        "📉 Cohort depreciation",
         "🏘️ By town",
         "⚠️ 60-yr threshold",
         "🏗️ Flat age cohorts",
@@ -191,45 +191,104 @@ with tab_scatter:
     st.plotly_chart(fig1, width='stretch')
 
 # ================================================================
-# 2. Depreciation curves by flat type
+# 2. Cohort depreciation curves (by lease-commencement decade)
 # ================================================================
 with tab_curves:
-    st.subheader("Depreciation curves by flat type")
+    st.subheader("Cohort depreciation curves")
     st.caption(
         "Median price per sqm within 5-year remaining-lease bands, "
-        "one line per flat type."
+        "one line per lease-commencement decade (cohort). "
+        "Read left → right: as remaining lease increases, prices rise — "
+        "confirming true lease depreciation once era/inflation is controlled."
     )
 
-    curves = (
-        df.groupby(["flat_type", "lease_band"])["price_per_sqm"]
+    with st.expander("Why cohort analysis?", expanded=False):
+        st.markdown(
+            """
+            **The era-confounding problem with naïve depreciation curves**
+
+            A simple chart of *median price per sqm vs remaining lease* — grouping
+            all transactions regardless of when they happened — produces a
+            misleading result: it often shows that flats with **more lease
+            remaining** are *cheaper* than short-lease flats. That is backwards.
+
+            Why does it happen? Because flats with 90+ years of lease remaining
+            were sold in the **1990s**, when HDB prices were far lower. Flats with
+            40–50 years remaining are sold **today** at much higher prices — but
+            that reflects 30 years of Singapore price inflation, **not** the value
+            of a shorter lease.
+
+            **Cohort analysis is the fix.** By grouping flats built in the same
+            decade (same lease-commencement cohort), we compare prices within a
+            set of buildings whose physical age and neighbourhood characteristics
+            are similar. As the cohort's remaining lease ticks down across
+            transaction years, we observe *true* lease depreciation — isolating
+            it from era/inflation effects.
+
+            Each line below tracks flats built in the same decade as their
+            remaining lease ticks down over multiple transaction years — this
+            isolates true depreciation from era/inflation effects.
+            """
+        )
+
+    # -- Cohort column: lease_commence_date decade --------------------------------
+    def _cohort_decade(yr):
+        if pd.isna(yr):
+            return None
+        yr = int(yr)
+        if yr < 1960:
+            return None  # negligible sample
+        decade = (yr // 10) * 10
+        return f"{decade}s"
+
+    df["_cohort_tab2"] = df["lease_commence_date"].apply(_cohort_decade)
+    df_c2 = df.dropna(subset=["_cohort_tab2", "lease_band"]).copy()
+
+    cohort_curves = (
+        df_c2.groupby(["_cohort_tab2", "lease_band"])["price_per_sqm"]
         .median()
         .reset_index()
+        .rename(columns={"_cohort_tab2": "Cohort"})
     )
-    curves["_sort"] = curves["lease_band"].apply(lease_bin_sort_key)
-    curves = curves.sort_values("_sort")
+    cohort_curves["_sort"] = cohort_curves["lease_band"].apply(lease_bin_sort_key)
+    cohort_curves = cohort_curves.sort_values(["Cohort", "_sort"])
+
+    # X-axis: LOW → HIGH left-to-right (lease running out on the left)
+    all_bands_sorted = sorted(
+        cohort_curves["lease_band"].unique(), key=lease_bin_sort_key
+    )
 
     fig2 = px.line(
-        curves,
+        cohort_curves,
         x="lease_band",
         y="price_per_sqm",
-        color="flat_type",
+        color="Cohort",
         markers=True,
         labels={
             "lease_band": "Remaining lease band (years)",
             "price_per_sqm": "Median price per sqm ($)",
-            "flat_type": "Flat type",
+            "Cohort": "Lease decade",
         },
+        category_orders={"lease_band": all_bands_sorted},
     )
     fig2.update_layout(
         xaxis=dict(
             categoryorder="array",
-            categoryarray=sorted(curves["lease_band"].unique(), key=lease_bin_sort_key),
+            categoryarray=all_bands_sorted,
         ),
         hovermode="x unified",
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
         margin=dict(t=30),
     )
     st.plotly_chart(fig2, width='stretch')
+
+    st.info(
+        "📌 In recent years only the older cohorts (1970s–1980s) have flats "
+        "with < 60 years of remaining lease, so those lines extend furthest "
+        "to the left. Newer cohorts (2000s–2010s) still carry high remaining "
+        "lease and appear only on the right side of the chart — their "
+        "depreciation story will become visible over future decades."
+    )
 
 # ================================================================
 # 3. Depreciation by town (user-selectable)

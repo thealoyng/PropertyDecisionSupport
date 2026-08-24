@@ -1,0 +1,271 @@
+quarter,market_segment,units
+2004-Q1,Core Central Region,187
+2004-Q1,Outside Central Region,255
+2004-Q1,Rest of Central Region,464
+2004-Q2,Core Central Region,249
+2004-Q2,Outside Central Region,332
+2004-Q2,Rest of Central Region,593
+2004-Q3,Core Central Region,107
+2004-Q3,Outside Central Region,1344
+2004-Q3,Rest of Central Region,142
+2004-Q4,Core Central Region,1131
+2004-Q4,Outside Central Region,658
+2004-Q4,Rest of Central Region,419
+2005-Q1,Core Central Region,722
+2005-Q1,Outside Central Region,184
+2005-Q1,Rest of Central Region,460
+2005-Q2,Core Central Region,1024
+2005-Q2,Outside Central Region,728
+2005-Q2,Rest of Central Region,1200
+2005-Q3,Core Central Region,805
+2005-Q3,Outside Central Region,501
+2005-Q3,Rest of Central Region,704
+2005-Q4,Core Central Region,1167
+2005-Q4,Outside Central Region,186
+2005-Q4,Rest of Central Region,520
+2006-Q1,Core Central Region,265
+2006-Q1,Outside Central Region,512
+2006-Q1,Rest of Central Region,1334
+2006-Q2,Core Central Region,941
+2006-Q2,Outside Central Region,914
+2006-Q2,Rest of Central Region,1150
+2006-Q3,Core Central Region,1224
+2006-Q3,Outside Central Region,755
+2006-Q3,Rest of Central Region,278
+2006-Q4,Core Central Region,1420
+2006-Q4,Outside Central Region,1035
+2006-Q4,Rest of Central Region,1241
+2007-Q1,Core Central Region,2259
+2007-Q1,Outside Central Region,1077
+2007-Q1,Rest of Central Region,923
+2007-Q2,Core Central Region,860
+2007-Q2,Outside Central Region,2146
+2007-Q2,Rest of Central Region,1356
+2007-Q3,Core Central Region,1360
+2007-Q3,Outside Central Region,1201
+2007-Q3,Rest of Central Region,1148
+2007-Q4,Core Central Region,532
+2007-Q4,Outside Central Region,463
+2007-Q4,Rest of Central Region,691
+2008-Q1,Core Central Region,246
+2008-Q1,Outside Central Region,813
+2008-Q1,Rest of Central Region,284
+2008-Q2,Core Central Region,419
+2008-Q2,Outside Central Region,594
+2008-Q2,Rest of Central Region,801
+2008-Q3,Core Central Region,462
+2008-Q3,Outside Central Region,773
+2008-Q3,Rest of Central Region,1009
+2008-Q4,Core Central Region,281
+2008-Q4,Outside Central Region,207
+2008-Q4,Rest of Central Region,218
+2009-Q1,Core Central Region,100
+2009-Q1,Outside Central Region,1336
+2009-Q1,Rest of Central Region,672
+2009-Q2,Core Central Region,1134
+2009-Q2,Outside Central Region,1309
+2009-Q2,Rest of Central Region,1426
+2009-Q3,Core Central Region,1223
+2009-Q3,Outside Central Region,2717
+2009-Q3,Rest of Central Region,1959
+2009-Q4,Core Central Region,1136
+2009-Q4,Outside Central Region,594
+2009-Q4,Rest of Central Region,497
+2010-Q1,Core Central Region,1988
+2010-Q1,Outside Central Region,1636
+2010-Q1,Rest of Central Region,748
+2010-Q2,Core Central Region,558
+2010-Q2,Outside Central Region,1719
+2010-Q2,Rest of Central Region,1903
+2010-Q3,Core Central Region,585
+2010-Q3,Outside Central Region,1643
+2010-Q3,Rest of Central Region,1273
+2010-Q4,Core Central Region,847
+2010-Q4,Outside Central Region,2868
+2010-Q4,Rest of Central Region,807
+2011-Q1,Core Central Region,730
+2011-Q1,Outside Central Region,1975
+2011-Q1,Rest of Central Region,1425
+2011-Q2,Core Central Region,545
+2011-Q2,Outside Central Region,3212
+2011-Q2,Rest of Central Region,1045
+2011-Q3,Core Central Region,312
+2011-Q3,Outside Central Region,3131
+2011-Q3,Rest of Central Region,1230
+2011-Q4,Core Central Region,456
+2011-Q4,Outside Central Region,2930
+2011-Q4,Rest of Central Region,719
+2012-Q1,Core Central Region,126
+2012-Q1,Outside Central Region,5638
+2012-Q1,Rest of Central Region,1139
+2012-Q2,Core Central Region,615
+2012-Q2,Outside Central Region,3894
+2012-Q2,Rest of Central Region,1606
+2012-Q3,Core Central Region,616
+2012-Q3,Outside Central Region,3857
+2012-Q3,Rest of Central Region,579
+2012-Q4,Core Central Region,586
+2012-Q4,Outside Central Region,1737
+2012-Q4,Rest of Central Region,1085
+2013-Q1,Core Central Region,501
+2013-Q1,Outside Central Region,3575
+2013-Q1,Rest of Central Region,1470
+2013-Q2,Core Central Region,380
+2013-Q2,Outside Central Region,2734
+2013-Q2,Rest of Central Region,1281
+2013-Q3,Core Central Region,184
+2013-Q3,Outside Central Region,2033
+2013-Q3,Rest of Central Region,1096
+2013-Q4,Core Central Region,1093
+2013-Q4,Outside Central Region,763
+2013-Q4,Rest of Central Region,775
+2014-Q1,Core Central Region,42
+2014-Q1,Outside Central Region,1478
+2014-Q1,Rest of Central Region,444
+2014-Q2,Core Central Region,210
+2014-Q2,Outside Central Region,1640
+2014-Q2,Rest of Central Region,993
+2014-Q3,Core Central Region,106
+2014-Q3,Outside Central Region,503
+2014-Q3,Rest of Central Region,685
+2014-Q4,Core Central Region,942
+2014-Q4,Outside Central Region,330
+2014-Q4,Rest of Central Region,320
+2015-Q1,Core Central Region,17
+2015-Q1,Outside Central Region,809
+2015-Q1,Rest of Central Region,363
+2015-Q2,Core Central Region,54
+2015-Q2,Outside Central Region,1736
+2015-Q2,Rest of Central Region,309
+2015-Q3,Core Central Region,46
+2015-Q3,Outside Central Region,2217
+2015-Q3,Rest of Central Region,172
+2015-Q4,Core Central Region,3
+2015-Q4,Outside Central Region,356
+2015-Q4,Rest of Central Region,974
+2016-Q1,Core Central Region,209
+2016-Q1,Outside Central Region,493
+2016-Q1,Rest of Central Region,251
+2016-Q2,Core Central Region,78
+2016-Q2,Outside Central Region,903
+2016-Q2,Rest of Central Region,1390
+2016-Q3,Core Central Region,73
+2016-Q3,Outside Central Region,1158
+2016-Q3,Rest of Central Region,378
+2016-Q4,Core Central Region,89
+2016-Q4,Outside Central Region,1626
+2016-Q4,Rest of Central Region,1229
+2017-Q1,Core Central Region,0
+2017-Q1,Outside Central Region,1539
+2017-Q1,Rest of Central Region,410
+2017-Q2,Core Central Region,30
+2017-Q2,Outside Central Region,1537
+2017-Q2,Rest of Central Region,444
+2017-Q3,Core Central Region,209
+2017-Q3,Outside Central Region,576
+2017-Q3,Rest of Central Region,398
+2017-Q4,Core Central Region,51
+2017-Q4,Outside Central Region,703
+2017-Q4,Rest of Central Region,123
+2018-Q1,Core Central Region,160
+2018-Q1,Outside Central Region,658
+2018-Q1,Rest of Central Region,103
+2018-Q2,Core Central Region,114
+2018-Q2,Outside Central Region,1509
+2018-Q2,Rest of Central Region,814
+2018-Q3,Core Central Region,19
+2018-Q3,Outside Central Region,1397
+2018-Q3,Rest of Central Region,2338
+2018-Q4,Core Central Region,182
+2018-Q4,Outside Central Region,559
+2018-Q4,Rest of Central Region,916
+2019-Q1,Core Central Region,363
+2019-Q1,Outside Central Region,1689
+2019-Q1,Rest of Central Region,937
+2019-Q2,Core Central Region,231
+2019-Q2,Outside Central Region,814
+2019-Q2,Rest of Central Region,1457
+2019-Q3,Core Central Region,399
+2019-Q3,Outside Central Region,1423
+2019-Q3,Rest of Central Region,1806
+2019-Q4,Core Central Region,525
+2019-Q4,Outside Central Region,1208
+2019-Q4,Rest of Central Region,493
+2020-Q1,Core Central Region,859
+2020-Q1,Outside Central Region,611
+2020-Q1,Rest of Central Region,623
+2020-Q2,Core Central Region,385
+2020-Q2,Outside Central Region,763
+2020-Q2,Rest of Central Region,704
+2020-Q3,Core Central Region,159
+2020-Q3,Outside Central Region,1284
+2020-Q3,Rest of Central Region,2348
+2020-Q4,Core Central Region,142
+2020-Q4,Outside Central Region,2375
+2020-Q4,Rest of Central Region,630
+2021-Q1,Core Central Region,694
+2021-Q1,Outside Central Region,570
+2021-Q1,Rest of Central Region,2452
+2021-Q2,Core Central Region,1019
+2021-Q2,Outside Central Region,727
+2021-Q2,Rest of Central Region,610
+2021-Q3,Core Central Region,410
+2021-Q3,Outside Central Region,1319
+2021-Q3,Rest of Central Region,420
+2021-Q4,Core Central Region,568
+2021-Q4,Outside Central Region,335
+2021-Q4,Rest of Central Region,1372
+2022-Q1,Core Central Region,145
+2022-Q1,Outside Central Region,187
+2022-Q1,Rest of Central Region,281
+2022-Q2,Core Central Region,702
+2022-Q2,Outside Central Region,285
+2022-Q2,Rest of Central Region,969
+2022-Q3,Core Central Region,240
+2022-Q3,Outside Central Region,1141
+2022-Q3,Rest of Central Region,74
+2022-Q4,Core Central Region,386
+2022-Q4,Outside Central Region,56
+2022-Q4,Rest of Central Region,62
+2023-Q1,Core Central Region,146
+2023-Q1,Outside Central Region,656
+2023-Q1,Rest of Central Region,510
+2023-Q2,Core Central Region,149
+2023-Q2,Outside Central Region,40
+2023-Q2,Rest of Central Region,2185
+2023-Q3,Core Central Region,210
+2023-Q3,Outside Central Region,1107
+2023-Q3,Rest of Central Region,1488
+2023-Q4,Core Central Region,125
+2023-Q4,Outside Central Region,885
+2023-Q4,Rest of Central Region,50
+2024-Q1,Core Central Region,20
+2024-Q1,Outside Central Region,1060
+2024-Q1,Rest of Central Region,224
+2024-Q2,Core Central Region,259
+2024-Q2,Outside Central Region,126
+2024-Q2,Rest of Central Region,249
+2024-Q3,Core Central Region,34
+2024-Q3,Outside Central Region,782
+2024-Q3,Rest of Central Region,468
+2024-Q4,Core Central Region,367
+2024-Q4,Outside Central Region,1324
+2024-Q4,Rest of Central Region,1734
+2025-Q1,Core Central Region,78
+2025-Q1,Outside Central Region,2284
+2025-Q1,Rest of Central Region,777
+2025-Q2,Core Central Region,18
+2025-Q2,Outside Central Region,20
+2025-Q2,Rest of Central Region,1482
+2025-Q3,Core Central Region,1856
+2025-Q3,Outside Central Region,1337
+2025-Q3,Rest of Central Region,998
+2025-Q4,Core Central Region,666
+2025-Q4,Outside Central Region,451
+2025-Q4,Rest of Central Region,1515
+2026-Q1,Core Central Region,701
+2026-Q1,Outside Central Region,1143
+2026-Q1,Rest of Central Region,0
+2026-Q2,Core Central Region,0
+2026-Q2,Outside Central Region,1406
+2026-Q2,Rest of Central Region,377

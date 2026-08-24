@@ -90,7 +90,7 @@ with st.expander("1️⃣ Schema Comparison across Raw Files", expanded=True):
 
     st.dataframe(
         schema_df.style.map(_highlight_missing, subset=RAW_LABELS),
-        width='stretch',
+        use_container_width=True,
         hide_index=True,
     )
 
@@ -136,14 +136,14 @@ with st.expander("2️⃣ Missing Values Heatmap (Cleaned Dataset)", expanded=Tr
         margin=dict(l=20, r=20, t=30, b=80),
         xaxis_tickangle=-45,
     )
-    st.plotly_chart(fig_miss, width='stretch')
+    st.plotly_chart(fig_miss, use_container_width=True)
 
     # Also show as a small table for screen readers / exact values
     cols_with_missing = miss_df[miss_df["Missing %"] > 0].sort_values(
         "Missing %", ascending=False
     )
     if len(cols_with_missing):
-        st.dataframe(cols_with_missing, width='stretch', hide_index=True)
+        st.dataframe(cols_with_missing, use_container_width=True, hide_index=True)
     else:
         st.success("No missing values in the cleaned dataset.")
 
@@ -178,7 +178,7 @@ with st.expander("3️⃣ Row Count by Source File", expanded=True):
         showlegend=False,
         coloraxis_showscale=False,
     )
-    st.plotly_chart(fig_rows, width='stretch')
+    st.plotly_chart(fig_rows, use_container_width=True)
 
     st.caption(f"**Total raw rows across all files:** {total_raw_rows:,}")
 
@@ -218,7 +218,7 @@ with st.expander("4️⃣ Date Coverage Timeline", expanded=True):
         showlegend=False,
         xaxis_title="",
     )
-    st.plotly_chart(fig_gantt, width='stretch')
+    st.plotly_chart(fig_gantt, use_container_width=True)
 
     # Overlap / gap detection
     st.markdown("**Coverage details:**")
@@ -273,7 +273,7 @@ with st.expander("5️⃣ Duplicate Detection (Cleaned Dataset)", expanded=True)
             .sort_values("count", ascending=False)
         )
         dup_counts = dup_counts[dup_counts["count"] > 1].head(20)
-        st.dataframe(dup_counts, width='stretch', hide_index=True)
+        st.dataframe(dup_counts, use_container_width=True, hide_index=True)
     else:
         st.success("No exact duplicate rows found in the cleaned dataset.")
 
@@ -303,7 +303,7 @@ with st.expander("6️⃣ flat_model Casing Inconsistency (Raw Files)", expanded
             })
 
     casing_df = pd.DataFrame(casing_rows)
-    st.dataframe(casing_df, width='stretch', hide_index=True)
+    st.dataframe(casing_df, use_container_width=True, hide_index=True)
 
     # Show a cross-file comparison of a specific model
     st.markdown("**Example — 'Improved' model across eras:**")
@@ -317,7 +317,7 @@ with st.expander("6️⃣ flat_model Casing Inconsistency (Raw Files)", expanded
                 improved_rows.append({"Source": label, "Raw Value": raw_val})
     if improved_rows:
         st.dataframe(
-            pd.DataFrame(improved_rows), width='stretch', hide_index=True
+            pd.DataFrame(improved_rows), use_container_width=True, hide_index=True
         )
 
 # =====================================================================
@@ -358,7 +358,7 @@ with st.expander("7️⃣ remaining_lease Format Comparison", expanded=True):
             })
 
     format_df = pd.DataFrame(format_rows)
-    st.dataframe(format_df, width='stretch', hide_index=True)
+    st.dataframe(format_df, use_container_width=True, hide_index=True)
 
     # Demo the parser
     st.markdown("**`parse_remaining_lease()` examples:**")
@@ -367,7 +367,7 @@ with st.expander("7️⃣ remaining_lease Format Comparison", expanded=True):
         "Raw Value": demo_vals,
         "Parsed (decimal years)": [parse_remaining_lease(v) for v in demo_vals],
     })
-    st.dataframe(demo_results, width='stretch', hide_index=True)
+    st.dataframe(demo_results, use_container_width=True, hide_index=True)
 
 # =====================================================================
 # 8. OUTLIER SUMMARY
@@ -399,7 +399,7 @@ with st.expander("8️⃣ Outlier Summary (IQR Method)", expanded=True):
         })
 
     outlier_df = pd.DataFrame(outlier_rows)
-    st.dataframe(outlier_df, width='stretch', hide_index=True)
+    st.dataframe(outlier_df, use_container_width=True, hide_index=True)
 
     # Box plots
     st.markdown("**Box plots (log-scale where appropriate):**")
@@ -412,7 +412,7 @@ with st.expander("8️⃣ Outlier Summary (IQR Method)", expanded=True):
             labels={"resale_price": "Resale Price ($)"},
         )
         fig_bp1.update_layout(height=350, margin=dict(l=20, r=20, t=40, b=20))
-        st.plotly_chart(fig_bp1, width='stretch')
+        st.plotly_chart(fig_bp1, use_container_width=True)
 
         fig_bp3 = px.box(
             df_clean, y="price_per_sqm",
@@ -420,7 +420,7 @@ with st.expander("8️⃣ Outlier Summary (IQR Method)", expanded=True):
             labels={"price_per_sqm": "Price per sqm ($)"},
         )
         fig_bp3.update_layout(height=350, margin=dict(l=20, r=20, t=40, b=20))
-        st.plotly_chart(fig_bp3, width='stretch')
+        st.plotly_chart(fig_bp3, use_container_width=True)
 
     with box_col2:
         fig_bp2 = px.box(
@@ -429,7 +429,7 @@ with st.expander("8️⃣ Outlier Summary (IQR Method)", expanded=True):
             labels={"floor_area_sqm": "Floor Area (sqm)"},
         )
         fig_bp2.update_layout(height=350, margin=dict(l=20, r=20, t=40, b=20))
-        st.plotly_chart(fig_bp2, width='stretch')
+        st.plotly_chart(fig_bp2, use_container_width=True)
 
         fig_bp4 = px.box(
             df_clean, y="flat_age",
@@ -437,7 +437,7 @@ with st.expander("8️⃣ Outlier Summary (IQR Method)", expanded=True):
             labels={"flat_age": "Flat Age (years)"},
         )
         fig_bp4.update_layout(height=350, margin=dict(l=20, r=20, t=40, b=20))
-        st.plotly_chart(fig_bp4, width='stretch')
+        st.plotly_chart(fig_bp4, use_container_width=True)
 
 # =====================================================================
 # 9. FLAT_TYPE VALUE INVENTORY
@@ -475,7 +475,7 @@ with st.expander("9️⃣ flat_type Value Inventory", expanded=True):
     )
     raw_ft_pivot["Total (raw)"] = raw_ft_pivot.sum(axis=1)
     raw_ft_pivot = raw_ft_pivot.sort_values("Total (raw)", ascending=False)
-    st.dataframe(raw_ft_pivot, width='stretch')
+    st.dataframe(raw_ft_pivot, use_container_width=True)
 
     # Cleaned dataset inventory
     st.markdown("**Cleaned dataset — flat_type distribution:**")
@@ -504,9 +504,9 @@ with st.expander("9️⃣ flat_type Value Inventory", expanded=True):
         yaxis=dict(autorange="reversed"),
         coloraxis_showscale=True,
     )
-    st.plotly_chart(fig_ft, width='stretch')
+    st.plotly_chart(fig_ft, use_container_width=True)
 
-    st.dataframe(clean_ft, width='stretch', hide_index=True)
+    st.dataframe(clean_ft, use_container_width=True, hide_index=True)
 
 # =====================================================================
 # FOOTER

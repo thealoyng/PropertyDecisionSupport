@@ -1,0 +1,200 @@
+---
+# Analysis Registry — every analytical page/model in PropertyDecisionSupport
+# confidence: High / Medium / Low / Experimental
+# status: live / planned / in_progress
+
+analyses:
+
+  # ── EXISTING ────────────────────────────────────────────────────────────
+
+  data_quality:
+    page: "pages/1_📊_Data_Quality.py"
+    description: Schema, missing values, coverage gaps, raw vs clean counts
+    sources: [hdb_resale]
+    confidence: High
+    status: live
+
+  distributions:
+    page: "pages/2_📉_Distributions.py"
+    description: Price and PSM distributions by flat type, storey, floor area
+    sources: [hdb_resale]
+    confidence: High
+    status: live
+
+  price_deep_dive:
+    page: "pages/3_💰_Price_Deep_Dive.py"
+    description: Violin plots, million-dollar analysis, percentile bands, town×type matrix
+    sources: [hdb_resale]
+    confidence: High
+    status: live
+
+  temporal_trends:
+    page: "pages/4_📅_Temporal_Trends.py"
+    description: Price and volume over time, policy event overlays, YoY growth
+    sources: [hdb_resale]
+    confidence: High
+    status: live
+
+  spatial_analysis:
+    page: "pages/5_🗺️_Spatial_Analysis.py"
+    description: Town bubble map, MRT proximity premium, price along rail lines
+    sources: [hdb_resale, onemap_geocoding, mrt_stations]
+    confidence: High
+    status: live
+
+  flat_characteristics:
+    page: "pages/6_🏘️_Flat_Characteristics.py"
+    description: Flat model breakdown, storey premium, floor area vs price
+    sources: [hdb_resale]
+    confidence: High
+    status: live
+
+  lease_depreciation:
+    page: "pages/7_📜_Lease_Depreciation.py"
+    description: Remaining lease vs price, 60-yr threshold, flat age cohorts
+    sources: [hdb_resale]
+    confidence: High (tab 3+ cohort), Low (tab 1-2 scatter — era-confounded)
+    status: live
+    known_issues:
+      - "Tab 1-2 LOWESS is confounded by era effects; see cohort tabs for honest depreciation"
+
+  market_dynamics:
+    page: "pages/8_📊_Market_Dynamics.py"
+    description: Price-volume cycles, market momentum, concentration heatmaps
+    sources: [hdb_resale]
+    confidence: High (descriptive), Medium (forward signals)
+    status: live
+
+  cross_dataset:
+    page: "pages/9_🔗_Cross_Dataset.py"
+    description: HDB resale × BTO × MRT × URA future developments
+    sources: [hdb_resale, bto_projects, mrt_stations, ura_future_developments, onemap_geocoding]
+    confidence: High (historical), Medium (future/planned)
+    status: live
+
+  statistical:
+    page: "pages/10_🔬_Statistical.py"
+    description: Correlation matrix, regression, outlier detection, LOWESS
+    sources: [hdb_resale]
+    confidence: High
+    status: live
+
+  # ── NEW ─────────────────────────────────────────────────────────────────
+
+  value_finder:
+    page: "pages/11_🔍_Value_Finder.py"
+    description: |
+      Undervalued area finder (blocks >15% below 1km neighbourhood median PSM),
+      comps engine (recent similar transactions for a target flat),
+      percentile pricer, floor premium validator, MRT proximity premium.
+    sources: [hdb_resale, onemap_geocoding, mrt_stations]
+    confidence: Medium
+    assumptions:
+      - Neighbourhood defined as all geocoded blocks within 1km radius
+      - Controlling for flat type but not for lease age or model in the basic version
+      - Recent = last 24 months
+    known_gaps:
+      - No renovation quality, floor facing, or unit-level attributes
+    status: live
+
+  fair_value_model:
+    page: "pages/12_📐_Fair_Value.py"
+    description: |
+      Hedonic regression fair value model with prediction intervals.
+      Mispricing detector (residual analysis).
+      Comparable property engine (weighted similarity scoring).
+      Block desirability fingerprint.
+    sources: [hdb_resale, onemap_geocoding, mrt_stations]
+    confidence: Medium
+    model_type: Ridge Regression (interpretable baseline) + Gradient Boosting
+    prediction_interval: Quantile regression (10th/90th percentile)
+    assumptions:
+      - Fair value is what a comparable flat would transact for in arms-length market
+      - Spatial features proxy for neighbourhood quality
+      - Trained on last 5 years of transactions
+    known_gaps:
+      - No renovation, condition, facing, view variables
+      - Block-level signals only (not unit-level)
+    status: live
+
+  mop_calendar:
+    page: "pages/13_📅_MOP_Calendar.py"
+    description: |
+      MOP unlock calendar — which blocks/towns become resale-eligible in next 24 months.
+      Predicted supply wave by town. Wave impact on nearby prices (historical analogy).
+    sources: [hdb_resale]
+    confidence: High (MOP dates are deterministic), Medium (price impact analogy)
+    assumptions:
+      - MOP = 5 years from lease_commence_date (for BTO) or transaction date (for resale MOP)
+      - Using lease_commence_date as proxy for BTO completion year
+    known_gaps:
+      - Exact BTO completion dates not in resale dataset; lease_commence_date used as proxy
+    status: live
+
+  market_regime:
+    page: "pages/14_📈_Market_Regime.py"
+    description: |
+      Market regime detector (price × volume × policy signals).
+      Entry/exit seasonality (best historical quarter to buy/sell).
+      Price floor by cooling-measure era (depth and recovery time).
+      Stigma persistence detector (block-level multi-year residuals).
+      Recovery detector (historical event studies).
+    sources: [hdb_resale]
+    confidence: High (descriptive), Medium (regime labels), Low (forward-looking)
+    status: live
+
+  smart_calculator:
+    page: "pages/15_🧮_Smart_Calculator.py"
+    description: |
+      Mortgage affordability (MSR/TDSR rules).
+      CPF usage eligibility (lease + buyer age).
+      Grant eligibility (EHG, PHG, Step-Up).
+      ABSD calculator (SC/PR/foreigner/entity × properties owned).
+      HDB upgrade pathway (equity extraction → condo ABSD cost).
+    sources: []
+    confidence: High (parametric, rules-based)
+    assumptions:
+      - CPF rules as of Aug 2026; verify at cpf.gov.sg for latest
+      - ABSD rates as of Aug 2026
+      - HDB loan rate 2.6% p.a.; bank rate user-configurable
+    status: live
+
+  hdb_vs_private:
+    page: "pages/16_🏢_HDB_vs_Private.py"
+    description: |
+      HDB resale price index vs URA Private Residential PPI comparison.
+      Cumulative return over time. Regional breakdown (CCR/RCR/OCR).
+      Note: individual condo transaction comparison available after URA API key configured.
+    sources: [hdb_resale, ura_ppi]
+    confidence: Medium (aggregate index comparison, not individual transaction matching)
+    known_gaps:
+      - Individual condo transactions require URA REALIS or URA API key (paid/registered)
+    status: live
+
+  rental_yields:
+    page: "pages/17_💹_Rental_Yields.py"
+    description: |
+      HDB rental transactions (Jan 2021+) — individual-level.
+      Gross yield = annual rent / median resale price × 100.
+      Historical yield trend (2005-Q2+ from HDB median rent data).
+      Buy-vs-rent breakeven calculator.
+      Yield compression analysis (prices rising faster than rents).
+    sources: [hdb_resale, hdb_rental_individual, hdb_median_rent]
+    confidence: High (rental data), Medium (yield calculation)
+    assumptions:
+      - Gross yield only — excludes vacancy, maintenance, property tax, mortgage cost
+      - Resale price used as purchase price proxy (median of matching town/flat_type)
+    status: live
+
+  lease_depreciation_fixed:
+    page: "pages/7_📜_Lease_Depreciation.py (Tab 2 rewrite)"
+    description: |
+      Cohort-based true lease depreciation — groups flats by lease_commence_date decade
+      and tracks PSM as remaining lease ticks down within each cohort.
+      Isolates true depreciation from era/inflation effects.
+    sources: [hdb_resale]
+    confidence: High
+    assumptions:
+      - Cohort = decade of lease_commence_date (1970s, 1980s, 1990s, 2000s, 2010s)
+      - PSM values not inflation-adjusted in V1; add CPI deflation in V2
+    status: in_progress

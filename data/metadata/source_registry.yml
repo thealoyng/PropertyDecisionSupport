@@ -1,0 +1,177 @@
+---
+# Source Registry — every data source used in PropertyDecisionSupport
+# All analyses reference a source_id from this file.
+# confidence_if_used: High / Medium / Low / Experimental
+
+sources:
+
+  hdb_resale:
+    name: HDB Resale Flat Prices
+    provider: Housing & Development Board (HDB)
+    url: https://data.gov.sg/collections/189/view
+    access_method: Manual CSV download / data.gov.sg API
+    refresh_frequency: Monthly
+    last_refresh: "2026-08"
+    coverage: "Jan 1990 – May 2026, 978k transactions"
+    license_notes: Singapore Open Data Licence 1.0 (free reuse with attribution)
+    fields: [month, town, flat_type, block, street_name, storey_range, floor_area_sqm, flat_model, lease_commence_date, remaining_lease, resale_price]
+    known_limitations:
+      - Pre-2012 uses approval date not registration date
+      - remaining_lease back-computed for pre-2015 transactions
+      - No listing duration, seller motivation, renovation quality, or exact unit condition
+    confidence_if_used: High
+
+  hdb_rental_individual:
+    name: Renting Out of Flats (Jan 2021+)
+    provider: Housing & Development Board (HDB)
+    url: https://data.gov.sg/datasets/d_c9f57187485a850908655db0e8cfe651/view
+    resource_id: d_c9f57187485a850908655db0e8cfe651
+    access_method: data.gov.sg API (free, no key)
+    refresh_frequency: Monthly
+    last_refresh: "2026-08"
+    coverage: "Jan 2021 – present, ~207k transactions"
+    license_notes: Singapore Open Data Licence 1.0
+    fields: [rent_approval_date, town, block, street_name, flat_type, monthly_rent]
+    known_limitations:
+      - Owner-declared; HDB does not verify accuracy
+      - Only covers approved subletting (not all rentals)
+      - Starts Jan 2021 only — no pre-2021 individual transactions
+    confidence_if_used: High
+
+  hdb_median_rent:
+    name: Median Rent By Town And Flat Type
+    provider: Housing & Development Board (HDB)
+    url: https://data.gov.sg/datasets/d_23000a00c52996c55106084ed0339566/view
+    resource_id: d_23000a00c52996c55106084ed0339566
+    access_method: data.gov.sg API (free, no key)
+    refresh_frequency: Quarterly
+    last_refresh: "2026-08"
+    coverage: "2005-Q2 – present, 13k rows"
+    license_notes: Singapore Open Data Licence 1.0
+    fields: [quarter, town, flat_type, median_rent]
+    known_limitations:
+      - Aggregate median — not individual transactions
+      - Some town/type combinations show 'na' for sparse data
+    confidence_if_used: High
+
+  ura_ppi:
+    name: Private Residential Property Price Index (Base 2009-Q1=100)
+    provider: Urban Redevelopment Authority (URA)
+    url: https://data.gov.sg/datasets/d_97f8a2e995022d311c6c68cfda6d034c/view
+    resource_id: d_97f8a2e995022d311c6c68cfda6d034c
+    access_method: data.gov.sg API (free, no key)
+    refresh_frequency: Quarterly
+    last_refresh: "2026-08"
+    coverage: "1975-Q1 – present"
+    license_notes: Singapore Open Data Licence 1.0
+    fields: [quarter, property_type, index]
+    known_limitations:
+      - Aggregate index only — no individual transaction prices
+      - Stratified Hedonic Regression method; weights revised every 3 years
+    confidence_if_used: Medium (aggregate only; not block/unit level)
+
+  onemap_geocoding:
+    name: OneMap Block Coordinates
+    provider: Singapore Land Authority (SLA)
+    url: https://www.onemap.gov.sg/apidocs/
+    access_method: OneMap REST API (free, requires registration)
+    refresh_frequency: One-time; re-run if addresses change
+    last_refresh: "2026-06"
+    coverage: "9,972 unique (block, street_name) pairs"
+    license_notes: OneMap API ToS — non-commercial use permitted
+    fields: [block, street_name, lat, lon]
+    known_limitations:
+      - ~3% of addresses returned no result; fall back to town centroid
+    confidence_if_used: High
+
+  bto_projects:
+    name: BTO Project Launch Data
+    provider: Manually compiled from HDB announcements
+    url: https://www.hdb.gov.sg/business/estate-agents-and-salespersons/buying-a-flat/overview/types-of-flats/bto-and-ros
+    access_method: Manual compilation
+    refresh_frequency: Per launch exercise (quarterly)
+    last_refresh: "2026-08"
+    coverage: "Oct 2024 – present"
+    license_notes: Public information
+    fields: [name, town, lat, lon, cls, batch, units, swt, conf]
+    known_limitations:
+      - Manually maintained — may lag latest launch announcements
+      - Classification estimated for some projects pending official table
+    confidence_if_used: Medium
+
+  mrt_stations:
+    name: MRT Station Locations
+    provider: Manually compiled from LTA data
+    url: https://www.lta.gov.sg/content/ltagov/en/getting_around/public_transport/mrt_lrt.html
+    access_method: Manual compilation
+    refresh_frequency: As network expands
+    last_refresh: "2026-06"
+    coverage: "All operational MRT stations as of mid-2026"
+    license_notes: Public information
+    fields: [name, line, lines, lat, lon]
+    known_limitations:
+      - Manually maintained
+      - Does not include LRT or bus interchange proximity
+    confidence_if_used: Medium
+
+  ura_units_launched:
+    name: Uncompleted Private Residential Units Launched by Market Segment (quarterly)
+    provider: Urban Redevelopment Authority (URA)
+    url: https://data.gov.sg/datasets/d_70824d34defde87d88faccc5d5b1c6ea/view
+    resource_id: d_70824d34defde87d88faccc5d5b1c6ea
+    access_method: data.gov.sg API (free, no key)
+    refresh_frequency: Quarterly
+    last_refresh: "2026-08"
+    coverage: "2004-Q1 – present, 270 rows"
+    license_notes: Singapore Open Data Licence 1.0
+    fields: [quarter, market_segment, units]
+    known_limitations:
+      - Aggregate by market segment (CCR/RCR/OCR) — no project or district level
+      - New launches only (not resale or sub-sale)
+    confidence_if_used: Medium (aggregate segment level)
+
+  ura_units_sold:
+    name: Uncompleted Private Residential Units Sold by Market Segment (quarterly)
+    provider: Urban Redevelopment Authority (URA)
+    url: https://data.gov.sg/datasets/d_e1c5b0df62729e69c82716355ef295ba/view
+    resource_id: d_e1c5b0df62729e69c82716355ef295ba
+    access_method: data.gov.sg API (free, no key)
+    refresh_frequency: Quarterly
+    last_refresh: "2026-08"
+    coverage: "2004-Q1 – present, 270 rows"
+    license_notes: Singapore Open Data Licence 1.0
+    fields: [quarter, type_of_property, market_segment, units]
+    known_limitations:
+      - Aggregate by market segment only
+    confidence_if_used: Medium
+
+  ura_units_unsold:
+    name: Unsold Private Residential Units with Planning Approvals (quarterly)
+    provider: Urban Redevelopment Authority (URA)
+    url: https://data.gov.sg/datasets/d_84d05d45049108f0fd2e99b66bd19cfe/view
+    resource_id: d_84d05d45049108f0fd2e99b66bd19cfe
+    access_method: data.gov.sg API (free, no key)
+    refresh_frequency: Quarterly
+    last_refresh: "2026-08"
+    coverage: "2006-Q3 – present, 960 rows"
+    license_notes: Singapore Open Data Licence 1.0
+    fields: [quarter, market_segment, type_of_development, status, type_of_sale, units]
+    known_limitations:
+      - Aggregate by market segment only — no district or project level
+      - Use filter: type_of_development=Uncompleted, status=Launched, type_of_sale=With Pre-Requisites
+        for the active developer inventory pipeline
+    confidence_if_used: Medium
+
+  ura_future_developments:
+    name: URA Draft Master Plan 2025 Future Developments
+    provider: Urban Redevelopment Authority (URA)
+    url: https://www.ura.gov.sg/Corporate/Planning/Master-Plan
+    access_method: Manual compilation from URA Draft Master Plan 2025
+    refresh_frequency: Per Master Plan review (~5 years)
+    last_refresh: "2026-06"
+    coverage: "Selected major future housing and business nodes"
+    license_notes: Public information
+    known_limitations:
+      - Indicative and subject to government review and change
+      - Implementation timing can shift materially
+    confidence_if_used: Medium (planning intent, not commitment)

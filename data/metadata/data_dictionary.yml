@@ -1,0 +1,206 @@
+---
+# Data Dictionary — all computed and raw fields used in PropertyDecisionSupport
+# Every field: source, description, type, units, computation (if derived)
+
+fields:
+
+  # ── HDB resale (raw + cleaned) ─────────────────────────────────────────
+
+  month:
+    source: hdb_resale
+    description: Transaction month (first day of month)
+    type: datetime
+    units: date
+    computation: Parsed from raw 'month' string (YYYY-MM)
+
+  year:
+    source: hdb_resale
+    description: Transaction year
+    type: int
+    computation: month.dt.year
+
+  town:
+    source: hdb_resale
+    description: HDB planning town (27 towns)
+    type: str
+    notes: Standardised to uppercase
+
+  flat_type:
+    source: hdb_resale
+    description: Flat type
+    type: str
+    values: [1 ROOM, 2 ROOM, 3 ROOM, 4 ROOM, 5 ROOM, EXECUTIVE, MULTI GENERATION]
+    notes: "MULTI-GENERATION normalised to MULTI GENERATION"
+
+  block:
+    source: hdb_resale
+    description: Block number (string to preserve leading zeros)
+    type: str
+
+  street_name:
+    source: hdb_resale
+    description: Street name
+    type: str
+    notes: Standardised to uppercase
+
+  storey_range:
+    source: hdb_resale
+    description: Storey range as text (e.g. "07 TO 09")
+    type: str
+
+  storey_mid:
+    source: hdb_resale
+    description: Midpoint of storey range
+    type: float
+    computation: "(lo + hi) / 2 from storey_range"
+
+  floor_area_sqm:
+    source: hdb_resale
+    description: Floor area in square metres
+    type: float
+    units: sqm
+
+  flat_model:
+    source: hdb_resale
+    description: Flat model (e.g. Model A, DBSS, Improved, Premium Apartment)
+    type: str
+    notes: Standardised to title case
+
+  lease_commence_date:
+    source: hdb_resale
+    description: Year the HDB lease commenced (approximately = year flat was built/completed)
+    type: int
+    units: year
+    notes: Used as proxy for BTO completion year; may differ by 1-3 years from actual key collection
+
+  flat_age:
+    source: hdb_resale
+    description: Age of flat at time of transaction
+    type: int
+    units: years
+    computation: year - lease_commence_date
+
+  remaining_lease_yrs:
+    source: hdb_resale
+    description: Remaining lease at time of transaction (decimal years)
+    type: float
+    units: years
+    computation: |
+      If 'remaining_lease' column exists in raw: parsed from string (e.g. "61 years 04 months" -> 61.33)
+      Otherwise back-computed as: 99 - flat_age
+    confidence: High for 2015+, Medium for pre-2015 (back-computed)
+
+  resale_price:
+    source: hdb_resale
+    description: Transaction resale price (SGD)
+    type: float
+    units: SGD
+
+  price_per_sqm:
+    source: hdb_resale
+    description: Resale price per square metre
+    type: float
+    units: SGD/sqm
+    computation: resale_price / floor_area_sqm
+
+  # ── Geocoding ───────────────────────────────────────────────────────────
+
+  lat:
+    source: onemap_geocoding
+    description: Block latitude (WGS84)
+    type: float
+    units: degrees
+    notes: Joined from address_coords.csv on (block, street_name); ~3% fallback to town centroid
+
+  lon:
+    source: onemap_geocoding
+    description: Block longitude (WGS84)
+    type: float
+    units: degrees
+
+  # ── HDB Rental ──────────────────────────────────────────────────────────
+
+  rent_approval_date:
+    source: hdb_rental_individual
+    description: Month HDB approved the subletting application
+    type: datetime
+    units: month (YYYY-MM)
+    notes: Owner-declared; HDB does not verify rent amount
+
+  monthly_rent:
+    source: hdb_rental_individual
+    description: Approved monthly rent amount (SGD)
+    type: float
+    units: SGD/month
+    confidence: Medium (owner-declared, not independently verified)
+
+  median_rent:
+    source: hdb_median_rent
+    description: Median approved rent by town and flat type (SGD)
+    type: float
+    units: SGD/month
+    notes: HDB published aggregate; 'na' where data is too sparse
+
+  # ── URA Private Property ────────────────────────────────────────────────
+
+  ura_ppi_index:
+    source: ura_ppi
+    description: URA Private Residential Property Price Index
+    type: float
+    units: index (base 2009-Q1 = 100)
+    property_types: [All Residential, Landed, Non-Landed]
+    computation: Stratified Hedonic Regression; weights revised every 3 years
+
+  # ── Derived / Computed ──────────────────────────────────────────────────
+
+  gross_yield_pct:
+    description: Gross rental yield
+    type: float
+    units: percent
+    computation: (median_monthly_rent * 12) / median_resale_price * 100
+    confidence: Medium
+    excludes: [vacancy, maintenance, property_tax, financing_cost, agent_fees]
+
+  neighbourhood_median_psm:
+    description: Median PSM of all geocoded blocks within 1km radius
+    type: float
+    units: SGD/sqm
+    computation: Haversine distance filter on address_coords, then median of price_per_sqm
+    confidence: Medium (depends on geocoding coverage and sample size)
+
+  discount_pct:
+    description: Block median PSM vs 1km neighbourhood median PSM
+    type: float
+    units: percent
+    computation: (block_median_psm - neighbourhood_median_psm) / neighbourhood_median_psm * 100
+    interpretation: Negative = block is cheaper than neighbourhood; positive = more expensive
+    confidence: Medium
+
+  fair_value_predicted:
+    description: Model-predicted resale price from hedonic regression
+    type: float
+    units: SGD
+    computation: Ridge regression / Gradient Boosting on floor_area, storey_mid, remaining_lease, town, flat_type, year
+    confidence: Medium
+    limitations: [no renovation quality, no exact facing, no view, no corner-block status]
+
+  std_residual:
+    description: Standardised residual (actual - predicted) / residual_std
+    type: float
+    units: dimensionless
+    computation: (resale_price - fair_value_predicted) / model_residual_std
+    interpretation: Positive = sold above model prediction; negative = sold below. Values beyond ±2 are notable.
+
+  mop_estimated_year:
+    description: Estimated year block's MOP was or will be completed
+    type: int
+    units: year
+    computation: lease_commence_date + 5
+    confidence: Medium (lease_commence_date is an approximation of BTO key collection year)
+
+  market_regime:
+    description: Classified market phase based on price growth and volume signals
+    type: str
+    values: [Trough, Recovery, Rising, Overheated, Cooling, Neutral]
+    computation: Rules-based classifier on rolling YoY PSM growth and volume change
+    confidence: Medium (descriptive label; not a predictive signal)

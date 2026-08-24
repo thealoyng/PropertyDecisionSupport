@@ -1,0 +1,619 @@
+quarter,property_type,index
+1975-Q1,All Residential,8.9
+1975-Q1,Landed,7.4
+1975-Q1,Non-Landed,10.5
+1975-Q2,All Residential,9.1
+1975-Q2,Landed,7.7
+1975-Q2,Non-Landed,11.2
+1975-Q3,All Residential,9.1
+1975-Q3,Landed,7.8
+1975-Q3,Non-Landed,11.5
+1975-Q4,All Residential,9.1
+1975-Q4,Landed,7.9
+1975-Q4,Non-Landed,11.5
+1976-Q1,All Residential,9.5
+1976-Q1,Landed,7.9
+1976-Q1,Non-Landed,11.5
+1976-Q2,All Residential,9.5
+1976-Q2,Landed,8
+1976-Q2,Non-Landed,11.7
+1976-Q3,All Residential,9.8
+1976-Q3,Landed,8
+1976-Q3,Non-Landed,11.7
+1976-Q4,All Residential,9.5
+1976-Q4,Landed,8
+1976-Q4,Non-Landed,11.5
+1977-Q1,All Residential,9.5
+1977-Q1,Landed,7.9
+1977-Q1,Non-Landed,11.5
+1977-Q2,All Residential,9.5
+1977-Q2,Landed,7.9
+1977-Q2,Non-Landed,11.5
+1977-Q3,All Residential,9.5
+1977-Q3,Landed,7.7
+1977-Q3,Non-Landed,11.5
+1977-Q4,All Residential,9.1
+1977-Q4,Landed,7.6
+1977-Q4,Non-Landed,11.5
+1978-Q1,All Residential,9.1
+1978-Q1,Landed,7.5
+1978-Q1,Non-Landed,11.5
+1978-Q2,All Residential,9.5
+1978-Q2,Landed,7.6
+1978-Q2,Non-Landed,11.7
+1978-Q3,All Residential,9.5
+1978-Q3,Landed,7.9
+1978-Q3,Non-Landed,11.7
+1978-Q4,All Residential,9.8
+1978-Q4,Landed,7.9
+1978-Q4,Non-Landed,12.1
+1979-Q1,All Residential,10.4
+1979-Q1,Landed,8.4
+1979-Q1,Non-Landed,12.7
+1979-Q2,All Residential,10.9
+1979-Q2,Landed,9
+1979-Q2,Non-Landed,13.3
+1979-Q3,All Residential,11.9
+1979-Q3,Landed,9.8
+1979-Q3,Non-Landed,14.6
+1979-Q4,All Residential,12.7
+1979-Q4,Landed,10.6
+1979-Q4,Non-Landed,15.8
+1980-Q1,All Residential,15.1
+1980-Q1,Landed,12.3
+1980-Q1,Non-Landed,18.9
+1980-Q2,All Residential,17.7
+1980-Q2,Landed,14.3
+1980-Q2,Non-Landed,22
+1980-Q3,All Residential,20.4
+1980-Q3,Landed,16.2
+1980-Q3,Non-Landed,25.8
+1980-Q4,All Residential,23.9
+1980-Q4,Landed,18.7
+1980-Q4,Non-Landed,31
+1981-Q1,All Residential,30.5
+1981-Q1,Landed,23.7
+1981-Q1,Non-Landed,39.6
+1981-Q2,All Residential,34.6
+1981-Q2,Landed,27.3
+1981-Q2,Non-Landed,44.3
+1981-Q3,All Residential,34
+1981-Q3,Landed,27.4
+1981-Q3,Non-Landed,43.1
+1981-Q4,All Residential,32.2
+1981-Q4,Landed,26.4
+1981-Q4,Non-Landed,40
+1982-Q1,All Residential,32
+1982-Q1,Landed,27
+1982-Q1,Non-Landed,38.7
+1982-Q2,All Residential,32.8
+1982-Q2,Landed,28.2
+1982-Q2,Non-Landed,39
+1982-Q3,All Residential,33.5
+1982-Q3,Landed,29.2
+1982-Q3,Non-Landed,38.7
+1982-Q4,All Residential,34.6
+1982-Q4,Landed,30.6
+1982-Q4,Non-Landed,39.6
+1983-Q1,All Residential,36.1
+1983-Q1,Landed,32.6
+1983-Q1,Non-Landed,40.6
+1983-Q2,All Residential,37.2
+1983-Q2,Landed,34
+1983-Q2,Non-Landed,41.2
+1983-Q3,All Residential,37.5
+1983-Q3,Landed,35.4
+1983-Q3,Non-Landed,40.6
+1983-Q4,All Residential,37.5
+1983-Q4,Landed,35.5
+1983-Q4,Non-Landed,39.6
+1984-Q1,All Residential,37.2
+1984-Q1,Landed,36.9
+1984-Q1,Non-Landed,38.1
+1984-Q2,All Residential,35.5
+1984-Q2,Landed,36.2
+1984-Q2,Non-Landed,35.4
+1984-Q3,All Residential,34.6
+1984-Q3,Landed,35.8
+1984-Q3,Non-Landed,33.7
+1984-Q4,All Residential,33.1
+1984-Q4,Landed,33.4
+1984-Q4,Non-Landed,33.1
+1985-Q1,All Residential,31
+1985-Q1,Landed,31.8
+1985-Q1,Non-Landed,30.9
+1985-Q2,All Residential,30.2
+1985-Q2,Landed,29.7
+1985-Q2,Non-Landed,31.3
+1985-Q3,All Residential,28.7
+1985-Q3,Landed,28.2
+1985-Q3,Non-Landed,29.9
+1985-Q4,All Residential,28.1
+1985-Q4,Landed,28.1
+1985-Q4,Non-Landed,28.5
+1986-Q1,All Residential,26.3
+1986-Q1,Landed,26.1
+1986-Q1,Non-Landed,26.5
+1986-Q2,All Residential,23.9
+1986-Q2,Landed,24.5
+1986-Q2,Non-Landed,23.5
+1986-Q3,All Residential,25.3
+1986-Q3,Landed,26
+1986-Q3,Non-Landed,24.8
+1986-Q4,All Residential,27.9
+1986-Q4,Landed,29.6
+1986-Q4,Non-Landed,26.5
+1987-Q1,All Residential,28.5
+1987-Q1,Landed,30.4
+1987-Q1,Non-Landed,26.8
+1987-Q2,All Residential,29.7
+1987-Q2,Landed,31.4
+1987-Q2,Non-Landed,28.3
+1987-Q3,All Residential,32
+1987-Q3,Landed,33.6
+1987-Q3,Non-Landed,31
+1987-Q4,All Residential,32
+1987-Q4,Landed,32.6
+1987-Q4,Non-Landed,31.4
+1988-Q1,All Residential,31.4
+1988-Q1,Landed,32.6
+1988-Q1,Non-Landed,30.7
+1988-Q2,All Residential,32.2
+1988-Q2,Landed,33.3
+1988-Q2,Non-Landed,31.6
+1988-Q3,All Residential,32.6
+1988-Q3,Landed,33
+1988-Q3,Non-Landed,32.6
+1988-Q4,All Residential,34
+1988-Q4,Landed,34
+1988-Q4,Non-Landed,34.4
+1989-Q1,All Residential,34.5
+1989-Q1,Landed,34
+1989-Q1,Non-Landed,35.2
+1989-Q2,All Residential,35.5
+1989-Q2,Landed,35
+1989-Q2,Non-Landed,36.4
+1989-Q3,All Residential,37.7
+1989-Q3,Landed,36.9
+1989-Q3,Non-Landed,38.7
+1989-Q4,All Residential,38.3
+1989-Q4,Landed,37.4
+1989-Q4,Non-Landed,39.4
+1990-Q1,All Residential,40.9
+1990-Q1,Landed,40.3
+1990-Q1,Non-Landed,41.6
+1990-Q2,All Residential,41.8
+1990-Q2,Landed,40.6
+1990-Q2,Non-Landed,43.1
+1990-Q3,All Residential,42
+1990-Q3,Landed,41.5
+1990-Q3,Non-Landed,42.7
+1990-Q4,All Residential,40.3
+1990-Q4,Landed,39
+1990-Q4,Non-Landed,41.8
+1991-Q1,All Residential,42.1
+1991-Q1,Landed,41.8
+1991-Q1,Non-Landed,42.8
+1991-Q2,All Residential,45.6
+1991-Q2,Landed,44.8
+1991-Q2,Non-Landed,46.7
+1991-Q3,All Residential,46.8
+1991-Q3,Landed,46.5
+1991-Q3,Non-Landed,47.5
+1991-Q4,All Residential,47.6
+1991-Q4,Landed,48.1
+1991-Q4,Non-Landed,47.7
+1992-Q1,All Residential,49.9
+1992-Q1,Landed,50.5
+1992-Q1,Non-Landed,49.9
+1992-Q2,All Residential,51.8
+1992-Q2,Landed,51.3
+1992-Q2,Non-Landed,52.7
+1992-Q3,All Residential,53.8
+1992-Q3,Landed,52.7
+1992-Q3,Non-Landed,55.2
+1992-Q4,All Residential,55.3
+1992-Q4,Landed,54.7
+1992-Q4,Non-Landed,56.3
+1993-Q1,All Residential,58.3
+1993-Q1,Landed,60.4
+1993-Q1,Non-Landed,57.2
+1993-Q2,All Residential,64.9
+1993-Q2,Landed,69.8
+1993-Q2,Non-Landed,61.6
+1993-Q3,All Residential,71.1
+1993-Q3,Landed,79.4
+1993-Q3,Non-Landed,65.4
+1993-Q4,All Residential,75.1
+1993-Q4,Landed,84.5
+1993-Q4,Non-Landed,68.5
+1994-Q1,All Residential,82.1
+1994-Q1,Landed,95.2
+1994-Q1,Non-Landed,72.7
+1994-Q2,All Residential,93.6
+1994-Q2,Landed,107.6
+1994-Q2,Non-Landed,83.4
+1994-Q3,All Residential,104.5
+1994-Q3,Landed,125.8
+1994-Q3,Non-Landed,88.7
+1994-Q4,All Residential,106.9
+1994-Q4,Landed,126.7
+1994-Q4,Non-Landed,92.3
+1995-Q1,All Residential,109.8
+1995-Q1,Landed,129.6
+1995-Q1,Non-Landed,95.2
+1995-Q2,All Residential,111.1
+1995-Q2,Landed,130.5
+1995-Q2,Non-Landed,96.8
+1995-Q3,All Residential,112.7
+1995-Q3,Landed,133.2
+1995-Q3,Non-Landed,97.7
+1995-Q4,All Residential,117.9
+1995-Q4,Landed,135.1
+1995-Q4,Non-Landed,105.5
+1996-Q1,All Residential,122.3
+1996-Q1,Landed,138.4
+1996-Q1,Non-Landed,110.8
+1996-Q2,All Residential,129.7
+1996-Q2,Landed,140.9
+1996-Q2,Non-Landed,122.2
+1996-Q3,All Residential,127.2
+1996-Q3,Landed,137.8
+1996-Q3,Non-Landed,119.9
+1996-Q4,All Residential,123.7
+1996-Q4,Landed,131.7
+1996-Q4,Non-Landed,118.8
+1997-Q1,All Residential,119.2
+1997-Q1,Landed,129.9
+1997-Q1,Non-Landed,111.9
+1997-Q2,All Residential,118.2
+1997-Q2,Landed,128.9
+1997-Q2,Non-Landed,110.9
+1997-Q3,All Residential,113
+1997-Q3,Landed,123.2
+1997-Q3,Non-Landed,106.2
+1997-Q4,All Residential,108.4
+1997-Q4,Landed,116.8
+1997-Q4,Non-Landed,102.9
+1998-Q1,All Residential,98.3
+1998-Q1,Landed,106.3
+1998-Q1,Non-Landed,93
+1998-Q2,All Residential,90.1
+1998-Q2,Landed,97.2
+1998-Q2,Non-Landed,85.4
+1998-Q3,All Residential,78.3
+1998-Q3,Landed,81.3
+1998-Q3,Non-Landed,76.8
+1998-Q4,All Residential,71.5
+1998-Q4,Landed,72.8
+1998-Q4,Non-Landed,71.2
+1999-Q1,All Residential,75.4
+1999-Q1,Landed,76.5
+1999-Q1,Non-Landed,75.2
+1999-Q2,All Residential,84.3
+1999-Q2,Landed,87
+1999-Q2,Non-Landed,83.5
+1999-Q3,All Residential,91.1
+1999-Q3,Landed,93.8
+1999-Q3,Non-Landed,90.4
+1999-Q4,All Residential,95.9
+1999-Q4,Landed,98.8
+1999-Q4,Non-Landed,95.1
+2000-Q1,All Residential,98.9
+2000-Q1,Landed,100.7
+2000-Q1,Non-Landed,98.5
+2000-Q2,All Residential,100.4
+2000-Q2,Landed,101
+2000-Q2,Non-Landed,100.4
+2000-Q3,All Residential,97.6
+2000-Q3,Landed,98.5
+2000-Q3,Non-Landed,97.7
+2000-Q4,All Residential,94.9
+2000-Q4,Landed,97.2
+2000-Q4,Non-Landed,94.2
+2001-Q1,All Residential,91.1
+2001-Q1,Landed,94.4
+2001-Q1,Non-Landed,90
+2001-Q2,All Residential,90.3
+2001-Q2,Landed,92
+2001-Q2,Non-Landed,89.8
+2001-Q3,All Residential,87.6
+2001-Q3,Landed,88.9
+2001-Q3,Non-Landed,87.3
+2001-Q4,All Residential,83.8
+2001-Q4,Landed,87
+2001-Q4,Non-Landed,82.7
+2002-Q1,All Residential,82.8
+2002-Q1,Landed,85.4
+2002-Q1,Non-Landed,82
+2002-Q2,All Residential,82.2
+2002-Q2,Landed,85
+2002-Q2,Non-Landed,81.4
+2002-Q3,All Residential,82.6
+2002-Q3,Landed,85.4
+2002-Q3,Non-Landed,81.6
+2002-Q4,All Residential,82.3
+2002-Q4,Landed,85.1
+2002-Q4,Non-Landed,81.3
+2003-Q1,All Residential,81.6
+2003-Q1,Landed,84.4
+2003-Q1,Non-Landed,80.6
+2003-Q2,All Residential,81.1
+2003-Q2,Landed,83.8
+2003-Q2,Non-Landed,80.2
+2003-Q3,All Residential,80.7
+2003-Q3,Landed,83.2
+2003-Q3,Non-Landed,79.9
+2003-Q4,All Residential,80.6
+2003-Q4,Landed,83.1
+2003-Q4,Non-Landed,79.9
+2004-Q1,All Residential,80.3
+2004-Q1,Landed,82.7
+2004-Q1,Non-Landed,79.6
+2004-Q2,All Residential,80.4
+2004-Q2,Landed,83
+2004-Q2,Non-Landed,79.6
+2004-Q3,All Residential,80.7
+2004-Q3,Landed,83.3
+2004-Q3,Non-Landed,79.9
+2004-Q4,All Residential,81.3
+2004-Q4,Landed,83.6
+2004-Q4,Non-Landed,80.8
+2005-Q1,All Residential,81.9
+2005-Q1,Landed,84
+2005-Q1,Non-Landed,81.4
+2005-Q2,All Residential,82.3
+2005-Q2,Landed,84.1
+2005-Q2,Non-Landed,81.9
+2005-Q3,All Residential,83.3
+2005-Q3,Landed,84.8
+2005-Q3,Non-Landed,83.1
+2005-Q4,All Residential,84.5
+2005-Q4,Landed,85.6
+2005-Q4,Non-Landed,84.4
+2006-Q1,All Residential,85.8
+2006-Q1,Landed,86.8
+2006-Q1,Non-Landed,85.7
+2006-Q2,All Residential,87.3
+2006-Q2,Landed,88.2
+2006-Q2,Non-Landed,87.2
+2006-Q3,All Residential,89.6
+2006-Q3,Landed,89.2
+2006-Q3,Non-Landed,90
+2006-Q4,All Residential,93.1
+2006-Q4,Landed,91.3
+2006-Q4,Non-Landed,93.8
+2007-Q1,All Residential,97.6
+2007-Q1,Landed,94
+2007-Q1,Non-Landed,98.8
+2007-Q2,All Residential,105.6
+2007-Q2,Landed,100.6
+2007-Q2,Non-Landed,107.1
+2007-Q3,All Residential,114.4
+2007-Q3,Landed,108.1
+2007-Q3,Non-Landed,116
+2007-Q4,All Residential,122.1
+2007-Q4,Landed,112.7
+2007-Q4,Non-Landed,124.4
+2008-Q1,All Residential,126.7
+2008-Q1,Landed,117.1
+2008-Q1,Non-Landed,129
+2008-Q2,All Residential,126.9
+2008-Q2,Landed,117.8
+2008-Q2,Non-Landed,129
+2008-Q3,All Residential,123.9
+2008-Q3,Landed,115.7
+2008-Q3,Non-Landed,125.8
+2008-Q4,All Residential,116.4
+2008-Q4,Landed,110.1
+2008-Q4,Non-Landed,117.8
+2009-Q1,All Residential,100
+2009-Q1,Landed,100
+2009-Q1,Non-Landed,100
+2009-Q2,All Residential,95.3
+2009-Q2,Landed,95.3
+2009-Q2,Non-Landed,95.3
+2009-Q3,All Residential,110.3
+2009-Q3,Landed,109.5
+2009-Q3,Non-Landed,110.5
+2009-Q4,All Residential,118.4
+2009-Q4,Landed,118.6
+2009-Q4,Non-Landed,118.4
+2010-Q1,All Residential,125.1
+2010-Q1,Landed,128.4
+2010-Q1,Non-Landed,124.3
+2010-Q2,All Residential,131.7
+2010-Q2,Landed,136.4
+2010-Q2,Non-Landed,130.5
+2010-Q3,All Residential,135.5
+2010-Q3,Landed,147
+2010-Q3,Non-Landed,132.6
+2010-Q4,All Residential,139.2
+2010-Q4,Landed,155.1
+2010-Q4,Non-Landed,135
+2011-Q1,All Residential,142.3
+2011-Q1,Landed,161.1
+2011-Q1,Non-Landed,137.3
+2011-Q2,All Residential,145.1
+2011-Q2,Landed,166.9
+2011-Q2,Non-Landed,139.2
+2011-Q3,All Residential,147
+2011-Q3,Landed,170.8
+2011-Q3,Non-Landed,140.8
+2011-Q4,All Residential,147.4
+2011-Q4,Landed,171
+2011-Q4,Non-Landed,141.2
+2012-Q1,All Residential,147.2
+2012-Q1,Landed,171.2
+2012-Q1,Non-Landed,141
+2012-Q2,All Residential,147.9
+2012-Q2,Landed,171.9
+2012-Q2,Non-Landed,141.6
+2012-Q3,All Residential,148.8
+2012-Q3,Landed,173.9
+2012-Q3,Non-Landed,142.3
+2012-Q4,All Residential,151.5
+2012-Q4,Landed,177
+2012-Q4,Non-Landed,144.8
+2013-Q1,All Residential,152.4
+2013-Q1,Landed,177.8
+2013-Q1,Non-Landed,145.9
+2013-Q2,All Residential,154
+2013-Q2,Landed,178.4
+2013-Q2,Non-Landed,148
+2013-Q3,All Residential,154.6
+2013-Q3,Landed,178.9
+2013-Q3,Non-Landed,148.9
+2013-Q4,All Residential,153.2
+2013-Q4,Landed,177.1
+2013-Q4,Non-Landed,147.6
+2014-Q1,All Residential,151.3
+2014-Q1,Landed,175.9
+2014-Q1,Non-Landed,145.7
+2014-Q2,All Residential,149.7
+2014-Q2,Landed,172.9
+2014-Q2,Non-Landed,144.5
+2014-Q3,All Residential,148.6
+2014-Q3,Landed,169.8
+2014-Q3,Non-Landed,143.9
+2014-Q4,All Residential,147
+2014-Q4,Landed,167.6
+2014-Q4,Non-Landed,142.5
+2015-Q1,All Residential,145.5
+2015-Q1,Landed,166.1
+2015-Q1,Non-Landed,140.9
+2015-Q2,All Residential,144.2
+2015-Q2,Landed,164.4
+2015-Q2,Non-Landed,139.8
+2015-Q3,All Residential,142.3
+2015-Q3,Landed,163.7
+2015-Q3,Non-Landed,137.7
+2015-Q4,All Residential,141.6
+2015-Q4,Landed,160.8
+2015-Q4,Non-Landed,137.4
+2016-Q1,All Residential,140.6
+2016-Q1,Landed,159
+2016-Q1,Non-Landed,136.6
+2016-Q2,All Residential,140
+2016-Q2,Landed,156.6
+2016-Q2,Non-Landed,136.5
+2016-Q3,All Residential,137.9
+2016-Q3,Landed,152.4
+2016-Q3,Non-Landed,134.9
+2016-Q4,All Residential,137.2
+2016-Q4,Landed,153.6
+2016-Q4,Non-Landed,133.8
+2017-Q1,All Residential,136.7
+2017-Q1,Landed,150.8
+2017-Q1,Non-Landed,133.8
+2017-Q2,All Residential,136.6
+2017-Q2,Landed,150.3
+2017-Q2,Non-Landed,133.7
+2017-Q3,All Residential,137.6
+2017-Q3,Landed,152.1
+2017-Q3,Non-Landed,134.5
+2017-Q4,All Residential,138.7
+2017-Q4,Landed,152.9
+2017-Q4,Non-Landed,135.6
+2018-Q1,All Residential,144.1
+2018-Q1,Landed,155.8
+2018-Q1,Non-Landed,141.6
+2018-Q2,All Residential,149
+2018-Q2,Landed,162.2
+2018-Q2,Non-Landed,146.1
+2018-Q3,All Residential,149.7
+2018-Q3,Landed,165.9
+2018-Q3,Non-Landed,146.1
+2018-Q4,All Residential,149.6
+2018-Q4,Landed,162.6
+2018-Q4,Non-Landed,146.8
+2019-Q1,All Residential,148.6
+2019-Q1,Landed,164.4
+2019-Q1,Non-Landed,145.2
+2019-Q2,All Residential,150.8
+2019-Q2,Landed,164.2
+2019-Q2,Non-Landed,148.1
+2019-Q3,All Residential,152.8
+2019-Q3,Landed,165.8
+2019-Q3,Non-Landed,150
+2019-Q4,All Residential,153.6
+2019-Q4,Landed,171.8
+2019-Q4,Non-Landed,149.6
+2020-Q1,All Residential,152.1
+2020-Q1,Landed,170.3
+2020-Q1,Non-Landed,148.1
+2020-Q2,All Residential,152.6
+2020-Q2,Landed,170.3
+2020-Q2,Non-Landed,148.7
+2020-Q3,All Residential,153.8
+2020-Q3,Landed,176.6
+2020-Q3,Non-Landed,148.8
+2020-Q4,All Residential,157
+2020-Q4,Landed,173.8
+2020-Q4,Non-Landed,153.3
+2021-Q1,All Residential,162.2
+2021-Q1,Landed,185.4
+2021-Q1,Non-Landed,157.1
+2021-Q2,All Residential,163.5
+2021-Q2,Landed,184.8
+2021-Q2,Non-Landed,158.8
+2021-Q3,All Residential,165.3
+2021-Q3,Landed,189.6
+2021-Q3,Non-Landed,159.9
+2021-Q4,All Residential,173.6
+2021-Q4,Landed,197
+2021-Q4,Non-Landed,168.4
+2022-Q1,All Residential,174.8
+2022-Q1,Landed,205.3
+2022-Q1,Non-Landed,167.9
+2022-Q2,All Residential,180.9
+2022-Q2,Landed,211.3
+2022-Q2,Non-Landed,173.9
+2022-Q3,All Residential,187.8
+2022-Q3,Landed,214.7
+2022-Q3,Non-Landed,181.6
+2022-Q4,All Residential,188.6
+2022-Q4,Landed,216
+2022-Q4,Non-Landed,182.1
+2023-Q1,All Residential,194.8
+2023-Q1,Landed,228.7
+2023-Q1,Non-Landed,186.8
+2023-Q2,All Residential,194.4
+2023-Q2,Landed,231.2
+2023-Q2,Non-Landed,185.7
+2023-Q3,All Residential,196
+2023-Q3,Landed,222.9
+2023-Q3,Non-Landed,189.8
+2023-Q4,All Residential,201.5
+2023-Q4,Landed,233.2
+2023-Q4,Non-Landed,194.2
+2024-Q1,All Residential,204.3
+2024-Q1,Landed,239.3
+2024-Q1,Non-Landed,196.1
+2024-Q2,All Residential,206.1
+2024-Q2,Landed,243.8
+2024-Q2,Non-Landed,197.3
+2024-Q3,All Residential,204.7
+2024-Q3,Landed,235.5
+2024-Q3,Non-Landed,197.5
+2024-Q4,All Residential,209.4
+2024-Q4,Landed,235.3
+2024-Q4,Non-Landed,203.4
+2025-Q1,All Residential,211.1
+2025-Q1,Landed,236.2
+2025-Q1,Non-Landed,205.4
+2025-Q2,All Residential,213.2
+2025-Q2,Landed,241.4
+2025-Q2,Non-Landed,206.8
+2025-Q3,All Residential,215.1
+2025-Q3,Landed,244.8
+2025-Q3,Non-Landed,208.5
+2025-Q4,All Residential,216.4
+2025-Q4,Landed,253.1
+2025-Q4,Non-Landed,208.1
+2026-Q1,All Residential,218.3
+2026-Q1,Landed,252.1
+2026-Q1,Non-Landed,210.8
+2026-Q2,All Residential,219.4
+2026-Q2,Landed,258.4
+2026-Q2,Non-Landed,210.6

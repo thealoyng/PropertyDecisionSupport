@@ -30,7 +30,7 @@ from streamlit_folium import st_folium
 # ---------------------------------------------------------------
 st.set_page_config(page_title="BTO Buddy", page_icon="🏠", layout="wide")
 
-DATA_PATH = "data/resale_clean_1990_present.csv"
+DATA_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "resale_clean_1990_present.csv")
 
 
 @st.cache_data
@@ -348,7 +348,8 @@ with tab_explorer:
     with ctrl3:
         color_by = st.selectbox("Colour by",
                                 ["Median price/sqm", "Median price",
-                                 "Transaction volume", "Avg remaining lease"],
+                                 "Transaction volume", "Avg remaining lease",
+                                 "Value Anomalies (vs 1km neighbourhood)"],
                                 key="explorer_color")
 
     layer_mode = st.radio("Map layer", ["Heatmap", "Hex bins", "Scatter"],
@@ -439,31 +440,78 @@ with tab_explorer:
         else:
             agg["trend_pct"] = 0.0
 
-        # ── Colour mapping ──
-        col_map = {
-            "Median price/sqm": "median_psm",
-            "Median price": "median_price",
-            "Transaction volume": "volume",
-            "Avg remaining lease": "avg_lease",
-        }
-        color_col = col_map[color_by]
-        vmin = agg[color_col].quantile(0.05)
-        vmax = agg[color_col].quantile(0.95)
-        if vmax == vmin:
-            vmax = vmin + 1
+        # ── Value Anomalies: compute neighbourhood discount/premium ──
+        value_anomaly_mode = (color_by == "Value Anomalies (vs 1km neighbourhood)")
+        if value_anomaly_mode and has_block_coords:
+            # For each block, compare its median_psm to the median of all blocks
+            # within 1km radius (haversine straight-line distance)
+            import math as _math
+            lats = agg["lat"].values
+            lons = agg["lon"].values
+            psms = agg["median_psm"].values
+            discounts = []
+            for i in range(len(agg)):
+                # Vectorised haversine approximation
+                dlat = (lats - lats[i]) * 111.0
+                dlon = (lons - lons[i]) * 111.0 * _math.cos(_math.radians(lats[i]))
+                dists = (dlat**2 + dlon**2) ** 0.5  # km
+                nbr_mask = (dists <= 1.0) & (dists > 0.0)
+                nbr_psms = psms[nbr_mask]
+                if len(nbr_psms) >= 3:
+                    nbr_med = float(np.median(nbr_psms))
+                    discounts.append((psms[i] - nbr_med) / nbr_med * 100)
+                else:
+                    discounts.append(0.0)
+            agg["discount_pct"] = discounts
+            color_col = "discount_pct"
+            # Diverging scale: blue = undervalued, red = overpriced
+            vmin, vmax = -25.0, 25.0
 
-        def val_to_rgb(val):
-            """Map a value to a green-yellow-red colour gradient."""
-            t = np.clip((val - vmin) / (vmax - vmin), 0, 1)
-            r = int(255 * t)
-            g = int(255 * (1 - t))
-            return [r, g, 60, 180]
+            def val_to_rgb(val):
+                """Diverging blue-white-red for anomaly mode."""
+                t = np.clip((val - vmin) / (vmax - vmin), 0, 1)
+                if t < 0.5:  # undervalued → blue
+                    intensity = int(255 * (1 - t * 2))
+                    return [60, 60, 255 - intensity // 2, 200]
+                else:  # overpriced → red
+                    intensity = int(255 * ((t - 0.5) * 2))
+                    return [200 + intensity // 5, 60, 60, 200]
+
+            st.caption(
+                "**Value Anomaly Map:** Blue = block is cheaper than its 1km neighbourhood; "
+                "Red = more expensive. Threshold for 'anomalous' is roughly ±12%. "
+                "A cheap block is not automatically a bargain — investigate the reason."
+            )
+        else:
+            value_anomaly_mode = False
+
+        # ── Colour mapping ──
+        if not value_anomaly_mode:
+            col_map = {
+                "Median price/sqm": "median_psm",
+                "Median price": "median_price",
+                "Transaction volume": "volume",
+                "Avg remaining lease": "avg_lease",
+                "Value Anomalies (vs 1km neighbourhood)": "median_psm",  # fallback if no coords
+            }
+            color_col = col_map[color_by]
+            vmin = agg[color_col].quantile(0.05)
+            vmax = agg[color_col].quantile(0.95)
+            if vmax == vmin:
+                vmax = vmin + 1
+
+            def val_to_rgb(val):
+                """Map a value to a green-yellow-red colour gradient."""
+                t = np.clip((val - vmin) / (vmax - vmin), 0, 1)
+                r = int(255 * t)
+                g = int(255 * (1 - t))
+                return [r, g, 60, 180]
 
         agg["color"] = agg[color_col].apply(val_to_rgb)
 
         # ── Tooltip ──
-        agg["tooltip_text"] = agg.apply(
-            lambda r: (
+        def _build_tooltip(r):
+            base = (
                 f"{'Blk ' + str(r['block']) + ', ' if r['block'] else ''}"
                 f"{r.get('street_name', r.get('town', ''))}\n"
                 f"Town: {r.get('town', 'N/A')}\n"
@@ -472,7 +520,12 @@ with tab_explorer:
                 f"Transactions: {int(r['volume'])}\n"
                 f"Avg Lease: {r['avg_lease']:.0f} yrs\n"
                 f"Trend: {r['trend_pct']:+.1f}%"
-            ), axis=1)
+            )
+            if "discount_pct" in r.index:
+                base += f"\nNeighbourhood gap: {r['discount_pct']:+.1f}%"
+            return base
+
+        agg["tooltip_text"] = agg.apply(_build_tooltip, axis=1)
 
         # ── Build pydeck layers ──
         view = pdk.ViewState(latitude=1.3521, longitude=103.8198,
@@ -522,7 +575,7 @@ with tab_explorer:
             layers=[layer],
             initial_view_state=view,
             tooltip=tooltip,
-            map_style="mapbox://styles/mapbox/light-v10",
+            map_style="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
         )
         st.pydeck_chart(deck, width='stretch')
 

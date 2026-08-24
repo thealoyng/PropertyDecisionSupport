@@ -336,6 +336,67 @@ fig_heat = px.imshow(
 fig_heat.update_layout(height=750)
 st.plotly_chart(fig_heat, width='stretch')
 
+# ── A10: PSM vs Floor Area — catching non-linear pricing ─────────
+st.divider()
+st.subheader("📐 Price per sqm vs Floor Area")
+st.caption(
+    "Small flats often carry a higher PSM premium that may not reflect equivalent value. "
+    "This scatter identifies where the PSM vs area relationship deviates from the norm."
+)
+
+a10_col1, a10_col2 = st.columns([1, 3])
+with a10_col1:
+    a10_flat = st.selectbox("Flat type", options=sorted(df["flat_type"].unique()),
+                            index=sorted(df["flat_type"].unique()).index("4 ROOM")
+                            if "4 ROOM" in df["flat_type"].unique() else 0,
+                            key="a10_flat")
+    a10_yrs = st.slider("Years (most recent)", 1, 10, 3, key="a10_yrs")
+
+a10_df = df[(df["flat_type"] == a10_flat) & (df["year"] >= df["year"].max() - a10_yrs)].copy()
+
+if len(a10_df) > 0:
+    # Fit a simple LOWESS-style smoothing using rolling median on floor_area bins
+    a10_df["area_bin"] = pd.cut(a10_df["floor_area_sqm"], bins=20)
+    area_medians = (a10_df.groupby("area_bin", observed=True)["price_per_sqm"]
+                    .median().reset_index())
+    area_medians["area_mid"] = area_medians["area_bin"].apply(
+        lambda x: (x.left + x.right) / 2 if hasattr(x, 'left') else float('nan'))
+    area_medians = area_medians.dropna(subset=["area_mid"])
+
+    with a10_col2:
+        fig_a10 = px.scatter(
+            a10_df.sample(min(5000, len(a10_df)), random_state=42),
+            x="floor_area_sqm", y="price_per_sqm",
+            color="town", opacity=0.3,
+            labels={"floor_area_sqm": "Floor Area (sqm)", "price_per_sqm": "Price per sqm ($)"},
+            title=f"PSM vs Floor Area — {a10_flat} (last {a10_yrs} years)",
+        )
+        # Overlay the median trend line
+        fig_a10.add_scatter(
+            x=area_medians["area_mid"], y=area_medians["price_per_sqm"],
+            mode="lines+markers", name="Median PSM by area bin",
+            line=dict(color="black", width=2, dash="dash"),
+        )
+        st.plotly_chart(fig_a10, use_container_width=True)
+
+    # Key insight
+    if len(area_medians) >= 4:
+        small_psm = area_medians[area_medians["area_mid"] <= area_medians["area_mid"].quantile(0.25)]["price_per_sqm"].median()
+        large_psm = area_medians[area_medians["area_mid"] >= area_medians["area_mid"].quantile(0.75)]["price_per_sqm"].median()
+        if pd.notna(small_psm) and pd.notna(large_psm) and large_psm > 0:
+            premium = (small_psm / large_psm - 1) * 100
+            st.info(
+                f"**Small unit PSM premium:** For {a10_flat} flats, "
+                f"the smallest quarter by floor area trades at a median PSM "
+                f"**{premium:+.1f}%** vs the largest quarter. "
+                f"({'Small units are priced higher per sqm — verify this is justified before paying up.' if premium > 5 else 'Pricing is relatively uniform across sizes.'})"
+            )
+    st.caption(
+        "DATA CONFIDENCE: High (direct from transaction records). "
+        "The PSM premium for small flats reflects both genuine scarcity and irrational anchoring — "
+        "the chart helps identify which is more likely for a given town."
+    )
+
 # ── footer ───────────────────────────────────────────────────────
 st.divider()
 st.caption(f"Data range after filter: {yr_lo}–{yr_hi} · {len(df):,} transactions")

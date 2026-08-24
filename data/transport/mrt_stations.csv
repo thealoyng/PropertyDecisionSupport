@@ -1,0 +1,140 @@
+name,line,lines,lat,lon,search_term
+Jurong East,NSL,"NSL,EWL",1.333,103.7436,Jurong East MRT station Singapore
+Bukit Batok,NSL,NSL,1.3492,103.7494,Bukit Batok MRT station Singapore
+Bukit Gombak,NSL,NSL,1.3588,103.7518,Bukit Gombak MRT station Singapore
+Choa Chu Kang,NSL,NSL,1.3854,103.7441,Choa Chu Kang MRT station Singapore
+Yew Tee,NSL,NSL,1.3972,103.7476,Yew Tee MRT station Singapore
+Kranji,NSL,NSL,1.4252,103.7618,Kranji MRT station Singapore
+Marsiling,NSL,NSL,1.4327,103.7742,Marsiling MRT station Singapore
+Woodlands,NSL,"NSL,TEL",1.4368,103.7864,Woodlands MRT station Singapore
+Admiralty,NSL,NSL,1.4406,103.8009,Admiralty MRT station Singapore
+Sembawang,NSL,NSL,1.4491,103.82,Sembawang MRT station Singapore
+Canberra,NSL,NSL,1.4432,103.8298,Canberra MRT station Singapore
+Yishun,NSL,NSL,1.4295,103.8354,Yishun MRT station Singapore
+Khatib,NSL,NSL,1.4174,103.833,Khatib MRT station Singapore
+Yio Chu Kang,NSL,NSL,1.3817,103.8448,Yio Chu Kang MRT station Singapore
+Ang Mo Kio,NSL,NSL,1.37,103.8494,Ang Mo Kio MRT station Singapore
+Bishan,NSL,"NSL,CCL",1.351,103.8487,Bishan MRT station Singapore
+Braddell,NSL,NSL,1.3406,103.847,Braddell MRT station Singapore
+Toa Payoh,NSL,NSL,1.3327,103.8473,Toa Payoh MRT station Singapore
+Novena,NSL,NSL,1.3203,103.8437,Novena MRT station Singapore
+Newton,NSL,"NSL,DTL",1.3122,103.8383,Newton MRT station Singapore
+Orchard,NSL,"NSL,TEL",1.304,103.8318,Orchard MRT station Singapore
+Somerset,NSL,NSL,1.2999,103.8389,Somerset MRT station Singapore
+Dhoby Ghaut,NSL,"NSL,CCL,NEL",1.299,103.8459,Dhoby Ghaut MRT station Singapore
+City Hall,NSL,"NSL,EWL",1.2931,103.852,City Hall MRT station Singapore
+Raffles Place,NSL,"NSL,EWL",1.283,103.8513,Raffles Place MRT station Singapore
+Marina Bay,NSL,"NSL,TEL",1.2762,103.8546,Marina Bay MRT station Singapore
+Marina South Pier,NSL,NSL,1.2706,103.8636,Marina South Pier MRT station Singapore
+Pasir Ris,EWL,EWL,1.3731,103.9494,Pasir Ris MRT station Singapore
+Tampines,EWL,"EWL,DTL",1.3527,103.9452,Tampines MRT station Singapore
+Simei,EWL,EWL,1.3434,103.9531,Simei MRT station Singapore
+Tanah Merah,EWL,EWL,1.3271,103.9462,Tanah Merah MRT station Singapore
+Bedok,EWL,EWL,1.324,103.93,Bedok MRT station Singapore
+Kembangan,EWL,EWL,1.321,103.9129,Kembangan MRT station Singapore
+Eunos,EWL,EWL,1.3197,103.9028,Eunos MRT station Singapore
+Paya Lebar,EWL,"EWL,CCL",1.3181,103.8921,Paya Lebar MRT station Singapore
+Aljunied,EWL,EWL,1.3163,103.883,Aljunied MRT station Singapore
+Kallang,EWL,EWL,1.3119,103.8709,Kallang MRT station Singapore
+Lavender,EWL,EWL,1.3074,103.8628,Lavender MRT station Singapore
+Bugis,EWL,"EWL,DTL",1.3008,103.8559,Bugis MRT station Singapore
+Tanjong Pagar,EWL,EWL,1.2762,103.845,Tanjong Pagar MRT station Singapore
+Outram Park,EWL,"EWL,NEL,TEL",1.28,103.8397,Outram Park MRT station Singapore
+Tiong Bahru,EWL,EWL,1.2862,103.8272,Tiong Bahru MRT station Singapore
+Redhill,EWL,EWL,1.2895,103.8165,Redhill MRT station Singapore
+Queenstown,EWL,EWL,1.2941,103.8063,Queenstown MRT station Singapore
+Commonwealth,EWL,EWL,1.3027,103.7983,Commonwealth MRT station Singapore
+Buona Vista,EWL,"EWL,CCL",1.3072,103.7902,Buona Vista MRT station Singapore
+Dover,EWL,EWL,1.3113,103.7784,Dover MRT station Singapore
+Clementi,EWL,EWL,1.3152,103.765,Clementi MRT station Singapore
+Chinese Garden,EWL,EWL,1.342,103.7323,Chinese Garden MRT station Singapore
+Lakeside,EWL,EWL,1.3443,103.7213,Lakeside MRT station Singapore
+Boon Lay,EWL,EWL,1.3387,103.706,Boon Lay MRT station Singapore
+Pioneer,EWL,EWL,1.3369,103.6972,Pioneer MRT station Singapore
+Joo Koon,EWL,EWL,1.3276,103.6781,Joo Koon MRT station Singapore
+Gul Circle,EWL,EWL,1.3193,103.6614,Gul Circle MRT station Singapore
+Tuas Crescent,EWL,EWL,1.3212,103.6491,Tuas Crescent MRT station Singapore
+Tuas West Road,EWL,EWL,1.3315,103.6403,Tuas West Road MRT station Singapore
+Tuas Link,EWL,EWL,1.3404,103.6366,Tuas Link MRT station Singapore
+Expo,EWL,"EWL,DTL",1.3354,103.9874,Expo MRT station Singapore
+Changi Airport,EWL,EWL,1.3592,103.9894,Changi Airport MRT station Singapore
+Bras Basah,CCL,CCL,1.2968,103.8509,Bras Basah MRT station Singapore
+Esplanade,CCL,CCL,1.2936,103.8556,Esplanade MRT station Singapore
+Promenade,CCL,"CCL,DTL",1.293,103.8612,Promenade MRT station Singapore
+Nicoll Highway,CCL,CCL,1.2998,103.8637,Nicoll Highway MRT station Singapore
+Stadium,CCL,CCL,1.3061,103.8747,Stadium MRT station Singapore
+Mountbatten,CCL,CCL,1.3063,103.8828,Mountbatten MRT station Singapore
+Dakota,CCL,CCL,1.3083,103.8882,Dakota MRT station Singapore
+MacPherson,CCL,"CCL,DTL",1.3265,103.888,MacPherson MRT station Singapore
+Tai Seng,CCL,CCL,1.3355,103.8875,Tai Seng MRT station Singapore
+Bartley,CCL,CCL,1.342,103.8801,Bartley MRT station Singapore
+Serangoon,CCL,"CCL,NEL",1.3498,103.8733,Serangoon MRT station Singapore
+Lorong Chuan,CCL,CCL,1.3517,103.8635,Lorong Chuan MRT station Singapore
+Marymount,CCL,CCL,1.349,103.8393,Marymount MRT station Singapore
+Caldecott,CCL,"CCL,TEL",1.3372,103.8393,Caldecott MRT station Singapore
+one-north,CCL,CCL,1.2993,103.7875,one-north MRT station Singapore
+Kent Ridge,CCL,CCL,1.2929,103.7845,Kent Ridge MRT station Singapore
+Haw Par Villa,CCL,CCL,1.2828,103.7826,Haw Par Villa MRT station Singapore
+Pasir Panjang,CCL,CCL,1.2759,103.791,Pasir Panjang MRT station Singapore
+Labrador Park,CCL,CCL,1.2718,103.8023,Labrador Park MRT station Singapore
+Telok Blangah,CCL,CCL,1.2735,103.8093,Telok Blangah MRT station Singapore
+HarbourFront,CCL,"CCL,NEL",1.2654,103.8218,HarbourFront MRT station Singapore
+Chinatown,NEL,"NEL,DTL",1.2839,103.8437,Chinatown MRT station Singapore
+Clarke Quay,NEL,NEL,1.2882,103.8465,Clarke Quay MRT station Singapore
+Little India,NEL,"NEL,DTL",1.3066,103.8495,Little India MRT station Singapore
+Farrer Park,NEL,NEL,1.3121,103.8549,Farrer Park MRT station Singapore
+Boon Keng,NEL,NEL,1.3193,103.8615,Boon Keng MRT station Singapore
+Potong Pasir,NEL,NEL,1.3312,103.8693,Potong Pasir MRT station Singapore
+Woodleigh,NEL,NEL,1.3395,103.8701,Woodleigh MRT station Singapore
+Kovan,NEL,NEL,1.3591,103.8831,Kovan MRT station Singapore
+Hougang,NEL,NEL,1.3715,103.8922,Hougang MRT station Singapore
+Buangkok,NEL,NEL,1.3832,103.8929,Buangkok MRT station Singapore
+Sengkang,NEL,NEL,1.3916,103.8952,Sengkang MRT station Singapore
+Punggol,NEL,NEL,1.4051,103.9022,Punggol MRT station Singapore
+Bukit Panjang,DTL,DTL,1.3782,103.7762,Bukit Panjang MRT station Singapore
+Cashew,DTL,DTL,1.3693,103.7742,Cashew MRT station Singapore
+Hillview,DTL,DTL,1.3621,103.7677,Hillview MRT station Singapore
+Beauty World,DTL,DTL,1.3413,103.776,Beauty World MRT station Singapore
+King Albert Park,DTL,DTL,1.3339,103.7826,King Albert Park MRT station Singapore
+Sixth Avenue,DTL,DTL,1.3313,103.7938,Sixth Avenue MRT station Singapore
+Tan Kah Kee,DTL,DTL,1.325,103.8073,Tan Kah Kee MRT station Singapore
+Botanic Gardens,DTL,DTL,1.3223,103.8152,Botanic Gardens MRT station Singapore
+Stevens,DTL,"DTL,TEL",1.3196,103.8261,Stevens MRT station Singapore
+Rochor,DTL,DTL,1.3037,103.8541,Rochor MRT station Singapore
+Bayfront,DTL,DTL,1.2824,103.8597,Bayfront MRT station Singapore
+Downtown,DTL,DTL,1.2793,103.8538,Downtown MRT station Singapore
+Telok Ayer,DTL,DTL,1.2804,103.8481,Telok Ayer MRT station Singapore
+Fort Canning,DTL,DTL,1.2929,103.8441,Fort Canning MRT station Singapore
+Bencoolen,DTL,DTL,1.2985,103.8498,Bencoolen MRT station Singapore
+Jalan Besar,DTL,DTL,1.3057,103.8564,Jalan Besar MRT station Singapore
+Bendemeer,DTL,DTL,1.3147,103.8628,Bendemeer MRT station Singapore
+Geylang Bahru,DTL,DTL,1.3217,103.8712,Geylang Bahru MRT station Singapore
+Mattar,DTL,DTL,1.3247,103.8793,Mattar MRT station Singapore
+Ubi,DTL,DTL,1.3264,103.9013,Ubi MRT station Singapore
+Kaki Bukit,DTL,DTL,1.3345,103.9059,Kaki Bukit MRT station Singapore
+Bedok North,DTL,DTL,1.3335,103.9145,Bedok North MRT station Singapore
+Bedok Reservoir,DTL,DTL,1.3361,103.9318,Bedok Reservoir MRT station Singapore
+Tampines West,DTL,DTL,1.3454,103.938,Tampines West MRT station Singapore
+Tampines East,DTL,DTL,1.3554,103.9593,Tampines East MRT station Singapore
+Upper Changi,DTL,DTL,1.3414,103.9612,Upper Changi MRT station Singapore
+Woodlands North,TEL,TEL,1.4483,103.7865,Woodlands North MRT station Singapore
+Woodlands South,TEL,TEL,1.426,103.7989,Woodlands South MRT station Singapore
+Springleaf,TEL,TEL,1.3993,103.8169,Springleaf MRT station Singapore
+Lentor,TEL,TEL,1.3847,103.8346,Lentor MRT station Singapore
+Mayflower,TEL,TEL,1.3703,103.838,Mayflower MRT station Singapore
+Bright Hill,TEL,TEL,1.3607,103.8398,Bright Hill MRT station Singapore
+Upper Thomson,TEL,TEL,1.3535,103.8316,Upper Thomson MRT station Singapore
+Napier,TEL,TEL,1.3065,103.8189,Napier MRT station Singapore
+Orchard Boulevard,TEL,TEL,1.3032,103.8231,Orchard Boulevard MRT station Singapore
+Great World,TEL,TEL,1.2942,103.8281,Great World MRT station Singapore
+Havelock,TEL,TEL,1.2889,103.8354,Havelock MRT station Singapore
+Maxwell,TEL,TEL,1.2789,103.8449,Maxwell MRT station Singapore
+Shenton Way,TEL,TEL,1.2764,103.8499,Shenton Way MRT station Singapore
+Gardens by the Bay,TEL,TEL,1.2827,103.8653,Gardens by the Bay MRT station Singapore
+Tanjong Rhu,TEL,TEL,1.2963,103.874,Tanjong Rhu MRT station Singapore
+Katong Park,TEL,TEL,1.3042,103.8978,Katong Park MRT station Singapore
+Tanjong Katong,TEL,TEL,1.3072,103.9035,Tanjong Katong MRT station Singapore
+Marine Parade,TEL,TEL,1.3026,103.9066,Marine Parade MRT station Singapore
+Marine Terrace,TEL,TEL,1.3026,103.9123,Marine Terrace MRT station Singapore
+Siglap,TEL,TEL,1.3096,103.9238,Siglap MRT station Singapore
+Bayshore,TEL,TEL,1.3159,103.9377,Bayshore MRT station Singapore

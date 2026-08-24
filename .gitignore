@@ -15,4 +15,5 @@ build/
 *.egg-info/
 .coverage
 htmlcov/
+data/resale/resale_clean_1990_present.csv
 data/resale_clean_1990_present.csv

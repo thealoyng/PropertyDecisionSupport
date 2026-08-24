@@ -260,7 +260,7 @@ with st.expander("1. Correlation Matrix Heatmap", expanded=True):
         width=800,
         height=700,
     )
-    st.plotly_chart(fig_corr, width='stretch')
+    st.plotly_chart(fig_corr, use_container_width=True)
 
     # Highlight top 5 pairs
     upper = (
@@ -272,7 +272,7 @@ with st.expander("1. Correlation Matrix Heatmap", expanded=True):
     upper["Abs r"] = upper["Pearson r"].abs()
     top5 = upper.nlargest(5, "Abs r").drop(columns="Abs r").reset_index(drop=True)
     st.markdown("**Top 5 strongest correlations:**")
-    st.dataframe(top5, hide_index=True, width='content')
+    st.dataframe(top5, hide_index=True, use_container_width=False)
 
 # ══════════════════════════════════════════════════════════════════
 #  2. Pair Plot (Scatter Matrix)
@@ -306,7 +306,7 @@ with st.expander("2. Pair Plot (Scatter Matrix)", expanded=False):
         height=900,
         margin=dict(t=60),
     )
-    st.plotly_chart(fig_pair, width='stretch')
+    st.plotly_chart(fig_pair, use_container_width=True)
 
 # ══════════════════════════════════════════════════════════════════
 #  3. ANOVA — Price by Town
@@ -371,7 +371,7 @@ with st.expander("3. ANOVA: Price per sqm by Town", expanded=False):
         margin=dict(t=30, b=120),
         height=500,
     )
-    st.plotly_chart(fig_anova_town, width='stretch')
+    st.plotly_chart(fig_anova_town, use_container_width=True)
 
 # ══════════════════════════════════════════════════════════════════
 #  4. ANOVA — Price by Flat Type
@@ -428,7 +428,7 @@ with st.expander("4. ANOVA: Price per sqm by Flat Type", expanded=False):
         margin=dict(t=30),
         height=450,
     )
-    st.plotly_chart(fig_anova_flat, width='stretch')
+    st.plotly_chart(fig_anova_flat, use_container_width=True)
 
 # ══════════════════════════════════════════════════════════════════
 #  5. Distribution Normality Tests
@@ -515,7 +515,7 @@ with st.expander("5. Distribution Normality Tests", expanded=False):
             margin=dict(t=40),
             showlegend=True,
         )
-        st.plotly_chart(fig_qq_raw, width='stretch')
+        st.plotly_chart(fig_qq_raw, use_container_width=True)
 
     with qq_col2:
         fig_qq_log = go.Figure()
@@ -543,7 +543,7 @@ with st.expander("5. Distribution Normality Tests", expanded=False):
             margin=dict(t=40),
             showlegend=True,
         )
-        st.plotly_chart(fig_qq_log, width='stretch')
+        st.plotly_chart(fig_qq_log, use_container_width=True)
 
 # ══════════════════════════════════════════════════════════════════
 #  6. Levene's Test (Variance Homogeneity)
@@ -614,7 +614,7 @@ with st.expander("7. Feature Importance — Random Forest", expanded=True):
         height=450,
         margin=dict(t=50, l=10),
     )
-    st.plotly_chart(fig_rf, width='stretch')
+    st.plotly_chart(fig_rf, use_container_width=True)
 
     st.caption(
         "Note: Importances are based on mean decrease in impurity (Gini). "
@@ -666,7 +666,7 @@ with st.expander("8. Variance Inflation Factor (VIF)", expanded=False):
             subset=["Interpretation"],
         ),
         hide_index=True,
-        width='content',
+        use_container_width=False,
     )
 
     severe = vif_display[vif_display["Interpretation"] == "Severe"]

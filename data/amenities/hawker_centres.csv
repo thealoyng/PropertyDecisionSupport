@@ -1,0 +1,130 @@
+name,lat,lon,postal_code,street,block,status
+Commonwealth Crescent Market,1.3069001323584224,103.80036727142618,149644,Commonwealth Crescent,31,Existing
+Tiong Bahru Market,1.2847855982150984,103.83218154655142,168898,Seng Poh Road,30,Existing
+Golden Mile Food Centre,1.303141753061011,103.863877615715,199583,Beach Road,505,Existing
+Yew Tee Hawker Centre,1.3971847191918951,103.74592160246587,680628,Yew Tee Close,628,Under Construction
+Dunman Food Centre,1.3094178879625105,103.9018254078894,424768,Onan Road,271,Existing
+Beo Crescent Market,1.2888308915646167,103.8273538919747,169982,Beo Crescent,38A,Existing
+Newton Food Centre,1.3119155203922301,103.83956972873328,229495,Clemenceau Ave North,500,Existing
+Adam Road Food Centre,1.3241598522323794,103.81416592401631,289876,Adam Road,2,Existing
+Kallang Estate Fresh Market and Food Centre,1.307343983274556,103.88401769942449,397972,Old Airport Road,17,Existing
+New Market Road Blk 32 (People's Park Food Centre),1.284858608203884,103.84257877119593,050032,New Market Road,32,Existing
+North Bridge Road Market,1.305634336272546,103.86390933661885,198783,North Bridge Road,861,Existing
+Holland Village Market and Food Centre,1.3110729744341822,103.79487641992755,277700,Lorong Mambong,1,Existing
+Chomp Chomp Food Centre,1.3642325250966993,103.86652701707575,557269,Kensington Park Road,20,Existing
+Jurong East Street 24 Blk 254 (Yuhua Village Market and Food Centre),1.3434881852952274,103.73773841154456,600254,Jurong East Street 24,254,Existing
+Jurong West Street 52 Blk 505,1.3496572915944292,103.7184436782123,640505,Jurong West Street 52,505,Existing
+Marine Terrace Blk 50A (50A Marine Terrace),1.3057297360038187,103.91573703509026,441050,Marine Terrace,50A,Existing
+Marine Parade Central Blk 84 (84 Marine Parade Central Market and Food Centre),1.3022965558595991,103.90634383419179,440084,Marine Parade Central,84,Existing
+Kampung Admiralty Hawker Centre,1.4397495181298368,103.80072071145584,730676,Woodlands Drive 71,676,Existing (new)
+Market Street Hawker Centre,1.2839000647082708,103.85000596089957,048947,Market Street,86,Existing (replacement)
+Marsiling Lane Blk 20/21,1.4434162431254685,103.7770061037781,730020,Marsiling Lane,20,Existing
+Marsiling Mall Hawker Centre,1.4335431810333386,103.7798818923625,738623,Woodlands Street 12,4,Existing (replacement)
+Mei Chin Road Blk 159 (Mei Chin Road Market),1.2932362444197107,103.80290387146337,140159,Mei Chin Road,159,Existing
+New Upper Changi Road Blk 208B,1.324782370224249,103.93057030470072,462208,New Upper Changi Road,208B,Existing
+New Upper Changi Road Blk 58,1.3242008730218346,103.94112527731751,461058,New Upper Changi Road,58,Existing
+Old Airport Road Blk 51 (51 Old Airport Road Food Centre and Shopping Mall),1.3082518466799975,103.88580870625425,390051,Old Airport Road,51,Existing
+Pasir Ris Central Hawker Centre,1.373472520364779,103.95157134251521,519641,Pasir Ris Central,110,Existing (new)
+Queen Street Blk 270 (Albert Centre),1.3011020159948925,103.85411577872539,180270,Queen Street,270,Existing
+Redhill Lane Blk 79 (Redhill Market),1.2878431730128634,103.81835209769348,150079,Redhill Lane,79,Existing
+Redhill Lane Blk 85 (Redhill Food Centre),1.2873075147506794,103.81831119566189,150085,Redhill Lane,85,Existing
+Sims Place Blk 49 (Sims Vista Market and Food Centre),1.3170350238501258,103.87930985514092,380049,Sims Place,49,Existing
+Smith Street Blk 335 (Chinatown Complex Market),1.2822749608841026,103.84323851850745,050335,Smith Street,335,Existing
+Taman Jurong Market and Food Centre,1.3347210666007077,103.72158379761716,618499,Yung Sheng Road,3,Existing
+Tampines Street 11 Blk 137 (Tampines Round Market and Food Centre),1.3453734735523084,103.94462942285355,521137,Tampines Street 11,137,Existing
+Teban Gardens Road Blk 37A (Teban Gardens Market and Food Centre),1.3208310935185843,103.74274811937117,601037,Teban Gardens Road,37A,Existing
+Telok Blangah Drive Blk 79 (Telok Blangah Food Centre),1.2733559939051546,103.80761812956985,100079,Telok Blangah Drive,79,Existing
+Telok Blangah Drive Blk 82 (Telok Blangah Market),1.2738907675844822,103.80790033728778,100082,Telok Blangah Drive,82,Existing
+Telok Blangah Rise Blk 36 (Telok Blangah Rise Market),1.2727612859808173,103.82236354225992,090036,Telok Blangah Rise,36,Existing
+Toa Payoh Lorong 4 Blk 74 (Toa Payoh Vista Market),1.3345507486923793,103.85200350902804,310074,Lorong 4 Toa Payoh,74,Existing
+Toa Payoh Lorong 1 Blk 127 (Toa Payoh West Market and Food Court),1.3381035143692974,103.84473272633905,310127,Lorong 1 Toa Payoh,127,Existing
+Telok Blangah Crescent Blk 11 (11 Telok Blangah Crescent Market and Food Centre),1.2773681323059345,103.81865152419587,090011,Telok Blangah Crescent,11,Existing
+Tanjong Pagar Plaza Blk 6 (Blk 6 Tanjong Pagar Plaza Market and Food Centre),1.276613670144106,103.8431616772891,081006,Tanjong Pagar Plaza,6,Existing
+Toa Payoh Lorong 4 Blk 93,1.3384746963913283,103.84951344899093,310093,Lorong 4 Toa Payoh,93,Existing
+Toa Payoh Lorong 7 Blk 22 (Kim Keat Palm Market and Food Centre),1.335382613078359,103.85700370906183,310022,Lorong 7 Toa Payoh,22,Existing
+Toa Payoh Lorong 5 Blk 75,1.3360207676183897,103.85295698796516,310075,Lorong 5 Toa Payoh,75,Existing
+Shunfu Road Blk 320 (Shunfu Mart),1.3520255700711772,103.8369645086122,570320,Shunfu Road,320,Existing
+Ang Mo Kio Ave 1 Blk 226D (Kebun Baru Market and Food Centre),1.366800962194856,103.83915227449918,564226,Ang Mo Kio Ave 1,226D,Existing
+Ang Mo Kio Ave 10 Blk 409 (Teck Ghee Square),1.3626541076693122,103.85528829790343,560409,Ang Mo Kio Ave 10,409,Existing
+Ang Mo Kio Ave 10 Blk 453A (Chong Boon Market and Food Centre),1.3682477885076516,103.85636164972811,561453,Ang Mo Kio Ave 10,453A,Existing
+Ang Mo Kio Ave 10 Blk 527 (Cheng San Market and Cooked Food Centre),1.3727720934379934,103.85445795532793,560527,Ang Mo Kio Ave 10,527,Existing
+Ang Mo Kio Ave 4 Blk 160/162 (Mayflower Market),1.3745277374668692,103.83917606128082,560160,Ang Mo Kio Ave 4,160,Existing
+Ang Mo Kio Ave 4 Blk 628 (Ang Mo Kio 628 Market),1.3809876170167132,103.8406280871954,560628,Ang Mo Kio Ave 4,628,Existing
+Ang Mo Kio Ave 6 Blk 724 (Blk 724 Ang Mo Kio Market),1.3721725853422009,103.84651030979788,560724,Ang Mo Kio Ave 6,724,Existing
+Ang Mo Kio Street 22 Blk 226H (Kebun Baru Food Centre),1.3671965379048148,103.8400222235967,568226,Ang Mo Kio Street 22,226H,Existing
+Bedok North Street 1 Blk 216,1.3270627418405785,103.93321797031916,460216,Bedok North Street 1,216,Existing
+Bedok North Street 3 Blk 511 (Kaki Bukit 511 Market and Food Centre),1.3332199326945382,103.93058152248236,460511,Bedok North Street 3,511,Existing
+Bedok North Street 3 Blk 538,1.3320672771423439,103.92462131526736,460538,Bedok North Street 3,538,Existing
+Bedok North Street 4 Blk 85 (85 Fengshan Centre),1.3320048242420148,103.93876843904202,460085,Bedok North Street 4,85,Existing
+Bedok Reservoir Road Blk 630,1.332772792382345,103.91419083989796,470630,Bedok Reservoir Road,630,Existing
+Bedok South Road Blk 16,1.3205008376701182,103.93547363751794,460016,Bedok South Road,16,Existing
+Bendemeer Road Blk 29 (Bendemeer Market and Food Centre),1.31921667863285,103.86302092286022,330029,Bendemeer Road,29,Existing
+Buffalo Road Blk 665 (Tekka Centre/Zhu Jiao Market),1.3061866381546818,103.8505855697116,210665,Buffalo Road,665,Existing
+Boon Lay Place Blk 221A/B (Boon Lay Place Market and Food Village),1.3452240653958958,103.71280068056076,641221,Boon Lay Place,221A,Existing
+Aljunied Ave 2 Blk 117 (Blk 117 Aljunied Market and Food Centre),1.3206463677515854,103.88702413972793,380117,Aljunied Ave 2,117,Existing
+Bukit Merah Central Blk 163 (Bukit Merah Central Food Centre),1.2836613955382454,103.81707271810343,150163,Bukit Merah Central,163,Existing
+Bukit Merah View Blk 115 (Blk 115 Bukit Merah View Market and Food Centre),1.2855044556549065,103.82182325630666,151115,Bukit Merah View,115,Existing
+Bukit Merah Lane 1 Blk 120 (Alexandra Village Food Centre),1.2863059431906378,103.8044926373283,150120,Bukit Merah Lane 1,120,Existing
+Cambridge Road Blk 41A (Pek Kio Market and Food Centre),1.3161312806032646,103.85023293507001,211041,Cambridge Road,41A,Existing
+Bukit Panjang Hawker Centre,1.3775974234205033,103.7724915268977,679947,Bukit Panjang Ring Road,2,Existing (new)
+Changi Village Blk 2 and 3,1.3891516483342807,103.98824524769368,500002,Changi Village Road,2,Existing
+Circuit Road Blk 80 (80 Circuit Road Market and Food Centre),1.3278341461996204,103.88710266901265,370080,Circuit Road,80,Existing
+Circuit Road Blk 79/79A,1.3265970669755378,103.88505228554148,370079,Circuit Road,79,Existing
+Ci Yuan Hawker Centre,1.3753225375634037,103.88293193010286,538776,Hougang Avenue 9,51,Existing (new)
+Circuit Road Blk 89,1.3235797144355712,103.8854388424852,370089,Circuit Road,89,Existing
+Clementi Ave 2 Blk 353 (Clementi Ave 2 Market/Cooked Food Centre),1.3143732849239704,103.77080549454163,120353,Clementi Ave 2,353,Existing
+Clementi Ave 3 Blk 448,1.3133196935787612,103.76451719252249,120448,Clementi Ave 3,448,Existing
+Clementi West Street 2 Blk 726,1.303810731977092,103.76425074802,120726,Clementi West Street 2,726,Existing
+Empress Road Blk 7 (Empress Road Market and Food Centre),1.3162405292821697,103.80563670047233,260007,Empress Road,7,Existing
+Eunos Crescent Blk 4A,1.3203312605225548,103.90425647876752,402004,Eunos Crescent,4A,Existing
+Geylang Bahru Blk 69 (Blk 69 Geylang Bahru Market and Food Centre),1.321463110363858,103.87000501449864,330069,Geylang Bahru,69,Existing
+Geylang Serai Market,1.316736349282815,103.89822788513564,402001,Geylang Serai,1,Existing
+Ghim Moh Road Blk 20,1.3109966321422568,103.78823030670418,270020,Ghim Moh Road,20,Existing
+Haig Road Blk 13/14 (Haig Road Market and Cooked Food Centre),1.3151075206359577,103.89558794497685,430013,Haig Road,13,Existing
+Havelock Road Blk 22A/B (Havelock Road Cooked Food Centre),1.2879705166198658,103.8296234138997,161022,Havelock Road,22A,Existing
+Holland Drive Blk 44 (Holland Drive Market and Food Centre),1.3081177997946856,103.7927737690562,270044,Holland Drive,44,Existing
+Hawker Centre @ Our Tampines Hub,1.3531335979472119,103.94040813551574,528523,Tampines Walk,1,Existing (new)
+Hougang Street 21 Blk 209 (Kovan Hougang Market and Food Centre),1.3590838409319475,103.88605536814947,530209,Hougang Street 21,209,Existing
+Jalan Batu Blk 4A (Blk 4A Jalan Batu Hawker Centre/Market),1.3023603479067136,103.88390947410478,432004,Jalan Batu,4A,Existing
+Hougang Ave 1 Blk 105 (Hougang 105 Hainanese Village Centre),1.3540827392695727,103.89013040811673,530105,Hougang Ave 1,105,Existing
+Jalan Bukit Merah Blk 112 (Blk 112 Jalan Bukit Merah Market and Food Centre),1.2800048011364626,103.82601329649792,160112,Jalan Bukit Merah,112,Existing
+Jalan Bukit Merah Blk 6 (ABC Brickworks Market/Food Centre),1.2868829730421196,103.8081312742836,150006,Jalan Bukit Merah,6,Existing
+Jalan Kukoh Blk 1 (Kukoh 21 Food Centre),1.2882310148481062,103.83993416821488,161001,Jalan Kukoh,1,Existing
+Jurong West Hawker Centre,1.3412641038830853,103.69724185257508,648202,Jurong West Street 61,50,Existing (new)
+Jurong East Ave 1 Blk 347 (Yuhua Market and Hawker Centre),1.3454169827607771,103.73170383842115,600347,Jurong East Ave 1,347,Existing
+Toa Payoh Lorong 8 Blk 210,1.3402610465757185,103.85439575904685,310210,Lorong 8 Toa Payoh,210,Existing
+Upper Boon Keng Road Blk 17 (Blk 17 Upper Boon Keng Market and Food Centre),1.3150284150824152,103.87162041651013,380017,Upper Boon Keng Road,17,Existing
+West Coast Drive Blk 502 (Ayer Rajah Market),1.3119069571999333,103.7591280191558,120502,West Coast Drive,502,Existing
+West Coast Drive Blk 503 (Ayer Rajah Food Centre),1.3118030896284905,103.75975140548066,120503,West Coast Drive,503,Existing
+Upper Cross Street Blk 531A (Hong Lim Food Centre and Market),1.2852950787883,103.84582428335005,051531,Upper Cross Street,531A,Existing
+Whampoa Drive Blk 90 (Whampoa Drive Makan Place/Whampoa Food Centre),1.323064938171913,103.85499618356134,320090,Whampoa Drive,90,Existing
+Whampoa Drive Blk 91/92 (Whampoa Drive Makan Place/Whampoa Market),1.323428186962711,103.85406019787618,320091,Whampoa Drive,91,Existing
+Yishun Park Hawker Centre,1.4249878627577708,103.84474752510276,768867,Yishun Avenue 11,51,Existing (new)
+Yishun Ring Road Blk 104/105 (Chong Pang Market and Food Centre),1.4314477516178066,103.82853767194467,760104,Yishun Ring Road,104,Existing
+Margaret Drive Hawker Centre,1.2974865589089906,103.80469379769634,142038,Margaret Drive,38A,Existing (replacement)
+Anchorvale Village Hawker Centre,1.3967931535173355,103.88843734465244,540339,Anchorvale Road,339,Existing (new)
+Fernvale Hawker Centre & Market,1.3917220930377379,103.87703907260794,797650,Sengkang West Avenue,21,Existing (new)
+One Punggol Hawker Centre,1.4087476457286714,103.90516945745766,828629,Punggol Drive,1,Existing (new)
+Bukit Canberra Hawker Centre,1.4482633636853246,103.8227636322519,756973,Canberra Link,21,Existing (new)
+Punggol Coast Hawker Centre,1.4145180096913892,103.90854260132319,829911,Punggol Way,84,Existing (new)
+Senja Hawker Centre,1.387194004486905,103.76108397650307,677632,Senja Close,2,Existing (new)
+Buangkok Hawker Centre,1.3829816322433666,103.89272100789816,544692,Compassvale Bow,70,Existing (new)
+Bukit Batok West Hawker Centre,1.3554458319148786,103.74207854445496,651469,Bukit Batok West Avenue 9,469A,Existing (new)
+Woodleigh Village Hawker Centre,1.3397910139953648,103.8720137732096,363202,Woodleigh Link,202C,Existing (new)
+Bukit Timah Interim Hawker Centre and Market,1.3407879159379656,103.77521471399332,599213,JALAN SEH CHUAN,2A,Interim Centre
+Amoy Street Food Centre (Telok Ayer Food Centre),1.2792312094873002,103.84661927383159,069111,MAXWELL ROAD,7,Existing
+Telok Blangah Hawker Centre & Market,1.2732499271477487,103.8084289682175,103078,Telok Blangah Drive,78C,Under Construction
+Bukit Timah Market,1.33923656638092,103.77633041443977,588215,Upper Bukit Timah Road,51,Under Construction
+Tampines North Hawker Centre,1.3668484230579017,103.9377763570609,529385,TAMPINES STREET 62,27,Under Construction
+Tanglin Halt Hawker Centre & Market,1.299651001320326,103.79803174152435,141017,Tanglin Halt Road,17A,Under Construction
+Pasir Panjang Food Centre,1.2759179745717486,103.79141090894716,118543,Pasir Panjang Road,121,Existing
+Bedok Food Centre,1.320350159875293,103.95547759902762,469572,Bedok Road,1,Existing
+Zion Riverside Food Centre,1.2923422109888436,103.8311890232012,247792,Zion Road,70,Existing
+Maxwell Food Centre (Kim Hua Market),1.2803314273259558,103.844747227493,069184,Kadayanallur Street,1,Existing
+Ang Mo Kio Ave 1 Blk 341 (Teck Ghee Court),1.36410720947631,103.84824216615792,560341,Ang Mo Kio Ave 1,341,Existing
+East Coast Lagoon Food Village,1.3072610657579828,103.93479973740149,468960,East Coast Parkway,1220,Existing
+Serangoon Garden Market,1.3630850108080914,103.86672494953132,555945,Serangoon Garden Way,49A,Existing
+Sembawang Hills Food Centre (Jalan Leban Food Centre),1.3723194930318616,103.82901814509523,574419,Upper Thomson Road,590,Existing
+Chong Pang Hawker Centre & Market,1.4308539599603998,103.82901736490587,768677,Yishun Ring Road,21,Under Construction
+Tanglin Halt Market,1.3005440753273743,103.79773798037208,148813,Tanglin Halt Road,48A,Existing
+Berseh Food Centre,1.307344109232522,103.85688878360739,208877,Jalan Besar,166,Existing

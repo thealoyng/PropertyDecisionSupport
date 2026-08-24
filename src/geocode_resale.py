@@ -15,12 +15,8 @@ Output:
 """
 import os
 import time
-import urllib3
 import requests
 import pandas as pd
-
-# Suppress InsecureRequestWarning when SSL verification is disabled
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 CLEAN_CSV = "data/resale_clean_1990_present.csv"
 OUTPUT_CSV = "data/address_coords.csv"
@@ -28,12 +24,12 @@ ONEMAP = "https://www.onemap.gov.sg/api/common/elastic/search"
 DELAY = 0.3  # seconds between API calls
 
 
-def geocode(query, verify_ssl=True):
+def geocode(query):
     """Return (lat, lon) for a search term, or (None, None) if not found."""
     params = {"searchVal": query, "returnGeom": "Y",
               "getAddrDetails": "Y", "pageNum": 1}
     try:
-        r = requests.get(ONEMAP, params=params, timeout=15, verify=verify_ssl)
+        r = requests.get(ONEMAP, params=params, timeout=15)
         r.raise_for_status()
         results = r.json().get("results", [])
         if results:
@@ -67,34 +63,18 @@ def main():
         print("All addresses already geocoded!")
         return
 
-    # Test SSL connectivity; fall back to verify=False if needed
-    verify_ssl = True
-    try:
-        requests.get(ONEMAP, params={"searchVal": "test"}, timeout=10)
-    except requests.exceptions.SSLError:
-        print("  SSL verification failed (corporate proxy?), retrying without verification...")
-        verify_ssl = False
-
     # Geocode remaining addresses in batches, saving progress periodically
     results = []
     batch_size = 100
     total = len(remaining)
-
-    for i, (_, row) in enumerate(remaining.iterrows()):
-        query = f"{row['block']} {row['street_name']}"
-        lat, lon = geocode(query, verify_ssl=verify_ssl)
-        results.append({
-            "block": row["block"],
-            "street_name": row["street_name"],
-            "lat": lat,
-            "lon": lon,
+      "lon": lon,
         })
 
         status = "OK" if lat is not None else "MISS"
         if (i + 1) % 50 == 0 or i == 0:
             print(f"  [{i+1}/{total}] {query:<40} -> {status}")
 
-        # Save progress every batch_size records
+        # Save progress everyds
         if (i + 1) % batch_size == 0 or (i + 1) == total:
             batch_df = pd.DataFrame(results)
             combined = pd.concat([existing, batch_df], ignore_index=True)

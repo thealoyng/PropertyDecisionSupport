@@ -232,6 +232,7 @@ with tab_bubble:
         pdk.Deck(
             layers=[layer, text_layer],
             initial_view_state=view,
+            map_style="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
             tooltip={
                 "html": (
                     "<b>{town}</b><br/>"

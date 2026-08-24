@@ -287,6 +287,69 @@ fig7.update_layout(
 )
 st.plotly_chart(fig7, width='stretch')
 
+# ── A9: Flat Model Price Differential ────────────────────────────
+st.divider()
+st.subheader("🏷️ Flat Model Price Differential")
+st.caption(
+    "Different flat models (DBSS, Model A, Improved, Standard, etc.) command significantly "
+    "different prices even for the same flat type and town. This analysis controls for flat "
+    "type to isolate the model premium."
+)
+
+a9_col1, a9_col2 = st.columns([1, 3])
+with a9_col1:
+    a9_flat = st.selectbox("Flat type", options=sorted(df["flat_type"].unique()),
+                           index=sorted(df["flat_type"].unique()).index("4 ROOM")
+                           if "4 ROOM" in df["flat_type"].unique() else 0,
+                           key="a9_flat")
+    a9_yrs = st.slider("Years (most recent)", 1, 10, 5, key="a9_yrs")
+    a9_min_n = st.slider("Min transactions per model", 5, 50, 20, key="a9_min_n")
+
+a9_df = df[(df["flat_type"] == a9_flat) & (df["year"] >= df["year"].max() - a9_yrs)].copy()
+
+if len(a9_df) > 0:
+    # Group by flat_model, compute stats
+    a9_model = (a9_df.groupby("flat_model")["price_per_sqm"]
+                .agg(median_psm="median", n="count", q25=lambda x: x.quantile(0.25), q75=lambda x: x.quantile(0.75))
+                .reset_index())
+    a9_model = a9_model[a9_model["n"] >= a9_min_n].sort_values("median_psm", ascending=False)
+
+    if len(a9_model) > 0:
+        overall_median = a9_df["price_per_sqm"].median()
+        a9_model["premium_pct"] = (a9_model["median_psm"] / overall_median - 1) * 100
+
+        with a9_col2:
+            fig_a9 = px.bar(
+                a9_model,
+                x="flat_model", y="median_psm",
+                error_y=a9_model["q75"] - a9_model["median_psm"],
+                error_y_minus=a9_model["median_psm"] - a9_model["q25"],
+                color="premium_pct",
+                color_continuous_scale="RdYlGn",
+                color_continuous_midpoint=0,
+                text=a9_model["premium_pct"].apply(lambda x: f"{x:+.1f}%"),
+                labels={"flat_model": "Flat Model", "median_psm": "Median PSM ($)", "premium_pct": "Premium vs avg (%)"},
+                title=f"Median PSM by Flat Model — {a9_flat} (last {a9_yrs} years, min {a9_min_n} txns)",
+            )
+            fig_a9.update_traces(textposition="outside")
+            fig_a9.add_hline(y=overall_median, line_dash="dash", line_color="black",
+                             annotation_text=f"Overall median: ${overall_median:,.0f}")
+            st.plotly_chart(fig_a9, use_container_width=True)
+            st.dataframe(
+                a9_model[["flat_model", "median_psm", "premium_pct", "n"]].rename(columns={
+                    "flat_model": "Model", "median_psm": "Median PSM ($)", "premium_pct": "Premium vs avg (%)", "n": "Transactions"
+                }).style.format({"Median PSM ($)": "${:,.0f}", "Premium vs avg (%)": "{:+.1f}%"}),
+                use_container_width=True, hide_index=True,
+            )
+    else:
+        st.info(f"Not enough data for this selection (min {a9_min_n} transactions per model).")
+
+st.caption(
+    "DATA CONFIDENCE: High (direct from transaction records). "
+    "Premium/discount reflects market preference for a model, holding flat type constant. "
+    "It does NOT control for location, storey, or lease within each model category."
+)
+
 # ── Footer ───────────────────────────────────────────────────────
 st.divider()
 st.caption(
