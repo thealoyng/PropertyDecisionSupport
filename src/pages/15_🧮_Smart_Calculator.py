@@ -89,13 +89,14 @@ def compute_bsd(price: float) -> float:
 #  Build tabs
 # ══════════════════════════════════════════════════════════════════════════════
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs(
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
     [
         "🏠 Mortgage Affordability",
         "🏦 CPF Usage Eligibility",
         "🎁 Grant Eligibility",
         "💰 ABSD Calculator",
         "🏗️ HDB Upgrade Pathway",
+        "📋 BTO Payment Breakdown",
     ]
 )
 
@@ -992,3 +993,146 @@ with tab5:
             "balance, bank valuation, loan approval, and timing of sale vs purchase. "
             "CPF accrued interest is compounded annually at the OA floor rate."
         )
+
+# ══════════════════════════════════════════════════════════════════════════════
+#  TAB 6 — BTO PAYMENT BREAKDOWN
+# ══════════════════════════════════════════════════════════════════════════════
+with tab6:
+    st.header("📋 BTO Payment Breakdown")
+    st.info(DISCLAIMER)
+    st.write(
+        "See how a BTO purchase is paid across its stages — from booking fee to "
+        "monthly loan instalments. This is a guide, not financial advice."
+    )
+
+    pb_c1, pb_c2 = st.columns(2)
+    with pb_c1:
+        pb_price = st.number_input(
+            "Flat price ($)", 100_000, 1_500_000, 450_000, step=10_000, key="pb_price"
+        )
+        pb_flat_type = st.selectbox(
+            "Flat type (sets the option fee)",
+            ["2-room Flexi", "3-room", "4-room", "5-room / 3Gen / Executive"],
+            index=2, key="pb_flat_type",
+        )
+        pb_loan_type = st.radio(
+            "Loan type", ["HDB loan (75%)", "Bank loan (75%)"], key="pb_loan_type"
+        )
+    with pb_c2:
+        pb_staggered = st.checkbox(
+            "Use Staggered Downpayment Scheme (eligible first-timers)", key="pb_staggered"
+        )
+        pb_tenure = st.slider("Loan tenure (years)", 10, 25, 25, key="pb_tenure")
+        pb_rate = st.slider(
+            "Interest rate (% p.a.)", 2.0, 4.5,
+            2.6 if "HDB" in pb_loan_type else 3.5, step=0.1, key="pb_rate"
+        )
+
+    pb_has_ehg = st.checkbox("I qualify for the Enhanced CPF Housing Grant (EHG)", key="pb_ehg")
+    pb_grant = 0
+    if pb_has_ehg:
+        pb_g1, pb_g2 = st.columns(2)
+        with pb_g1:
+            pb_household = st.radio(
+                "Household type", ["Family", "Single"], horizontal=True, key="pb_household"
+            )
+        pb_max_grant = 120_000 if pb_household == "Family" else 60_000
+        with pb_g2:
+            pb_grant = st.number_input(
+                "Your EHG amount ($)", min_value=0, max_value=pb_max_grant,
+                value=0, step=500, key="pb_grant_amt",
+            )
+
+    # Option fees per flat type
+    pb_option_fees = {
+        "2-room Flexi": 500, "3-room": 1000,
+        "4-room": 2000, "5-room / 3Gen / Executive": 2000,
+    }
+    pb_option_fee = pb_option_fees[pb_flat_type]
+
+    # Downpayment split
+    if pb_staggered:
+        pb_signing_pct, pb_keys_pct = 0.05, 0.20
+    else:
+        pb_signing_pct, pb_keys_pct = 0.10, 0.15
+
+    pb_signing_dp = pb_price * pb_signing_pct
+    pb_keys_dp = pb_price * pb_keys_pct
+    pb_loan_amount = max(pb_price * 0.75 - pb_grant, 0)
+
+    pb_bsd = compute_bsd(pb_price)
+    pb_mortgage_stamp = min(round(pb_loan_amount * 0.004), 500)
+    pb_survey_fees = {
+        "2-room Flexi": 163.50, "3-room": 218.30,
+        "4-room": 272.85, "5-room / 3Gen / Executive": 354.25,
+    }
+    pb_survey_fee = round(pb_survey_fees[pb_flat_type])
+    pb_legal_fee = 500
+    pb_admin_fees = 90
+    pb_total_fees = pb_bsd + pb_mortgage_stamp + pb_survey_fee + pb_legal_fee + pb_admin_fees
+
+    pb_r = pb_rate / 100 / 12
+    pb_n = pb_tenure * 12
+    pb_monthly = pb_loan_amount * pb_r / (1 - (1 + pb_r) ** -pb_n) if pb_r > 0 else pb_loan_amount / pb_n
+    pb_min_cash = pb_price * 0.05 if "Bank" in pb_loan_type else 0
+
+    st.divider()
+    st.markdown("#### Your payment timeline")
+    pb_stages = pd.DataFrame([
+        {"Stage": "1. At booking",
+         "What you pay": "Option fee",
+         "Amount": pb_option_fee,
+         "When": "When you select your flat"},
+        {"Stage": "2. Signing Agreement for Lease",
+         "What you pay": f"Downpayment ({int(pb_signing_pct*100)}%) − option fee + fees & stamp duties",
+         "Amount": pb_signing_dp - pb_option_fee + pb_total_fees,
+         "When": "~4–6 months after booking"},
+        {"Stage": "3. Key collection",
+         "What you pay": f"Remaining downpayment ({int(pb_keys_pct*100)}%)",
+         "Amount": pb_keys_dp,
+         "When": "~2.5–4 years later (after construction)"},
+        {"Stage": "4. After key collection",
+         "What you pay": f"Loan instalments (${pb_loan_amount:,.0f} financed over {pb_tenure} yrs)",
+         "Amount": pb_monthly,
+         "When": "Monthly, until loan is repaid"},
+    ])
+    pb_disp = pb_stages.copy()
+    pb_disp["Amount"] = pb_disp["Amount"].apply(lambda x: f"${x:,.0f}")
+    pb_disp.loc[3, "Amount"] += " / month"
+    st.table(pb_disp.set_index("Stage"))
+
+    st.markdown("#### Fees & stamp duties (due at signing)")
+    pb_fees = pd.DataFrame([
+        {"Item": "Buyer's Stamp Duty (BSD)",                "Amount": pb_bsd},
+        {"Item": "Mortgage stamp duty (0.4% of loan, max $500)", "Amount": pb_mortgage_stamp},
+        {"Item": "Survey fee",                              "Amount": pb_survey_fee},
+        {"Item": "Conveyancing / legal fee (approx.)",      "Amount": pb_legal_fee},
+        {"Item": "Caveat & title admin fees",               "Amount": pb_admin_fees},
+        {"Item": "Total fees & stamp duties",               "Amount": pb_total_fees},
+    ])
+    pb_fees_disp = pb_fees.copy()
+    pb_fees_disp["Amount"] = pb_fees_disp["Amount"].apply(lambda x: f"${x:,.0f}")
+    st.table(pb_fees_disp.set_index("Item"))
+
+    pb_upfront = pb_option_fee + (pb_signing_dp - pb_option_fee + pb_total_fees) + pb_keys_dp
+    pm1, pm2, pm3 = st.columns(3)
+    pm1.metric("Total downpayment (25%)", f"${pb_price * 0.25:,.0f}")
+    pm2.metric("Total upfront (incl. fees)", f"${pb_upfront:,.0f}")
+    pm3.metric("Monthly instalment", f"${pb_monthly:,.0f}")
+
+    if pb_grant > 0:
+        st.success(
+            f"🎁 EHG of **${pb_grant:,.0f}** applied — it reduces the amount financed "
+            f"to **${pb_loan_amount:,.0f}**, lowering your monthly instalment."
+        )
+    if pb_min_cash > 0:
+        st.info(
+            f"💵 Bank loan: at least **${pb_min_cash:,.0f}** (5% of price) must be paid in cash."
+        )
+    else:
+        st.info("💡 HDB loan: the full 25% downpayment can be paid with CPF OA, cash, or a mix.")
+
+    st.caption(
+        "Estimates only. BSD uses standard residential rates; legal/survey fees are approximate. "
+        "Always verify with HDB and your bank."
+    )

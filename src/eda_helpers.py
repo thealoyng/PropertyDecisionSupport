@@ -409,6 +409,35 @@ def parse_remaining_lease(val):
     return round(y + m / 12, 2)
 
 
+def floor_range_mid(band) -> float:
+    """Parse a private condo floor_range band string to a numeric midpoint.
+
+    Examples:
+        '01-05' → 3.0
+        '06-10' → 8.0
+        '31+'   → 33.0
+        NaN     → NaN
+    """
+    import math as _math
+    if band is None or (isinstance(band, float) and _math.isnan(band)):
+        return float("nan")
+    band = str(band).strip()
+    if not band:
+        return float("nan")
+    if band.endswith("+"):
+        try:
+            return float(band[:-1]) + 2
+        except ValueError:
+            return float("nan")
+    parts = band.split("-")
+    if len(parts) == 2:
+        try:
+            return (float(parts[0]) + float(parts[1])) / 2
+        except ValueError:
+            return float("nan")
+    return float("nan")
+
+
 def storey_band(mid):
     """Map storey midpoint to a human-readable band."""
     if pd.isna(mid):
@@ -431,6 +460,38 @@ def storey_band(mid):
     else:
         return "31+"
 
+
+# Singapore postal district centroids (D01–D28) for private property analysis
+DISTRICT_CENTROIDS = {
+    1:  ("Boat Quay / Raffles Place / Marina",   1.2866, 103.8516),
+    2:  ("Chinatown / Tanjong Pagar",             1.2756, 103.8448),
+    3:  ("Alexandra / Commonwealth",              1.2931, 103.8035),
+    4:  ("Harbourfront / Telok Blangah",          1.2636, 103.8222),
+    5:  ("Buona Vista / West Coast",              1.3048, 103.7755),
+    6:  ("City Hall / Clarke Quay",               1.2905, 103.8475),
+    7:  ("Middle Road / Golden Mile",             1.3014, 103.8610),
+    8:  ("Little India / Farrer Park",            1.3120, 103.8558),
+    9:  ("Orchard / River Valley",                1.3036, 103.8317),
+    10: ("Bukit Timah / Holland",                 1.3295, 103.8021),
+    11: ("Newton / Novena",                       1.3202, 103.8438),
+    12: ("Balestier / Toa Payoh",                 1.3303, 103.8499),
+    13: ("Macpherson / Potong Pasir",             1.3310, 103.8783),
+    14: ("Eunos / Geylang / Paya Lebar",          1.3152, 103.9028),
+    15: ("East Coast / Katong",                   1.3038, 103.9027),
+    16: ("Bedok / Upper East Coast",              1.3265, 103.9468),
+    17: ("Changi / Loyang",                       1.3721, 103.9474),
+    18: ("Tampines / Pasir Ris",                  1.3531, 103.9491),
+    19: ("Hougang / Punggol / Sengkang",          1.3868, 103.8914),
+    20: ("Ang Mo Kio / Bishan / Thomson",         1.3526, 103.8491),
+    21: ("Clementi / Upper Bukit Timah",          1.3294, 103.7649),
+    22: ("Boon Lay / Jurong / Tuas",              1.3329, 103.7436),
+    23: ("Bukit Batok / Choa Chu Kang",           1.3840, 103.7470),
+    24: ("Lim Chu Kang / Tengah",                 1.4305, 103.7172),
+    25: ("Admiralty / Woodlands",                 1.4382, 103.7891),
+    26: ("Mandai / Upper Thomson",                1.4106, 103.8120),
+    27: ("Sembawang / Yishun",                    1.4304, 103.8354),
+    28: ("Seletar / Yio Chu Kang",                1.3800, 103.8690),
+}
 
 # Town approximate centroids for fallback when block coords unavailable
 TOWN_CENTROIDS = {

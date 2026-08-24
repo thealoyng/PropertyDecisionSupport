@@ -31,6 +31,9 @@ from eda_helpers import (
     fmt_pct,
     storey_band,
     TOWN_CENTROIDS,
+    load_condo_clean,
+    DISTRICT_CENTROIDS,
+    floor_range_mid,
 )
 
 # ── page config ───────────────────────────────────────────────────────
@@ -108,10 +111,301 @@ st.caption(
     "analysis, and market trend context in one page."
 )
 
+mode_comps = st.radio(
+    "Property type",
+    ["🏘️ HDB Resale", "🏢 Private (Condo)"],
+    horizontal=True,
+    key="comps_mode",
+)
+st.divider()
+
 # ── load data ─────────────────────────────────────────────────────────
-with st.spinner("Loading HDB resale data…"):
+with st.spinner("Loading data…"):
     df_all = load_resale()
 
+# ════════════════════════════════════════════════════════════════════════════
+# PRIVATE (CONDO) MODE helpers & runner
+# ════════════════════════════════════════════════════════════════════════════
+
+@st.cache_data
+def _load_condo_for_comps():
+    df = load_condo_clean()
+    if df.empty:
+        return df
+    df = df[df["property_type_broad"].isin(["Condo/Apartment", "EC"])].copy()
+    df["contract_date"] = pd.to_datetime(df["contract_date"], errors="coerce")
+    df["floor_mid"] = df["floor_range"].apply(floor_range_mid)
+    return df
+
+
+def _priv_similarity(df, subj_area, subj_floor_mid, subj_tenure, cur_year):
+    s_area    = (df["area_sqm"]  - subj_area).abs()      / max(subj_area, 1)   * 0.35
+    s_floor   = (df["floor_mid"] - subj_floor_mid).abs() / 10.0                * 0.20
+    s_tenure  = (df["tenure_clean"] != subj_tenure).astype(float)               * 0.20
+    s_recency = (cur_year - df["contract_date"].dt.year)                        / 3.0 * 0.25
+    return s_area + s_floor + s_tenure + s_recency
+
+
+def _run_private_comps():
+    """All private comps report logic — called then st.stop() exits HDB path."""
+    st.warning("⚠️ Private data covers Aug 2021–2026 (~5 years). "
+               "Smaller comp pools than HDB — widen filters if fewer than 5 results.")
+
+    with st.spinner("Loading private transaction data…"):
+        cdf_all = _load_condo_for_comps()
+
+    if cdf_all.empty:
+        st.error("Private transaction data not found. Run combine_clean_condo.py first.")
+        st.stop()
+
+    PRIV_DIST_OPTS  = {d: f"D{d:02d} — {name}" for d, (name, _, _) in DISTRICT_CENTROIDS.items()}
+    PRIV_PTYPES     = sorted(cdf_all["property_type_broad"].dropna().unique().tolist())
+    PRIV_FLOOR_RNGS = sorted(
+        cdf_all["floor_range"].dropna().unique().tolist(),
+        key=lambda x: floor_range_mid(x) if not np.isnan(floor_range_mid(x)) else 99,
+    )
+    PRIV_TENURES    = sorted(cdf_all["tenure_clean"].dropna().unique().tolist())
+    PRIV_SALE_TYPES = ["All"] + sorted(cdf_all["type_of_sale"].dropna().unique().tolist())
+
+    with st.form("comps_form_priv"):
+        st.subheader("📝 Subject Property Details")
+        pc1, pc2, pc3 = st.columns(3)
+        with pc1:
+            priv_district = st.selectbox(
+                "District", list(PRIV_DIST_OPTS.keys()), index=8,
+                format_func=lambda d: PRIV_DIST_OPTS[d], key="comps_priv_dist",
+            )
+            priv_prop_type = st.selectbox("Property Type", PRIV_PTYPES, key="comps_priv_ptype")
+        with pc2:
+            priv_floor_rng = st.selectbox(
+                "Subject Floor Range", PRIV_FLOOR_RNGS,
+                index=min(2, len(PRIV_FLOOR_RNGS) - 1), key="comps_priv_floor",
+            )
+            priv_tenure = st.selectbox("Tenure", PRIV_TENURES, key="comps_priv_tenure")
+        with pc3:
+            priv_area = st.number_input(
+                "Floor Area (sqm)", 30.0, 500.0, 90.0, step=5.0, key="comps_priv_area"
+            )
+            priv_asking_price = st.number_input(
+                "Asking Price ($ — 0 = not provided)",
+                0, 20_000_000, 0, step=10_000, key="comps_priv_price",
+            )
+        pc4, pc5 = st.columns(2)
+        with pc4:
+            priv_sale_type = st.selectbox(
+                "Sale Type Filter", PRIV_SALE_TYPES, index=0, key="comps_priv_sale"
+            )
+        with pc5:
+            priv_range = st.radio(
+                "Year Range for Comps",
+                ["Last 12 months", "Last 2 years", "Last 3 years"],
+                index=1, key="comps_priv_range",
+            )
+        priv_submitted = st.form_submit_button(
+            "🔍 Generate Private Comps Report", use_container_width=True
+        )
+
+    if not priv_submitted:
+        st.info("Fill in subject property details and click Generate Comps Report.")
+        st.stop()
+
+    priv_today    = datetime.date.today()
+    priv_cur_year = priv_today.year
+    priv_months   = {"Last 12 months": 12, "Last 2 years": 24, "Last 3 years": 36}[priv_range]
+    priv_cutoff   = pd.Timestamp(priv_today) - pd.DateOffset(months=priv_months)
+
+    priv_pool = cdf_all[
+        (cdf_all["district"]              == priv_district)
+        & (cdf_all["property_type_broad"] == priv_prop_type)
+        & (cdf_all["contract_date"]       >= priv_cutoff)
+    ].copy()
+    if priv_sale_type != "All":
+        priv_pool = priv_pool[priv_pool["type_of_sale"] == priv_sale_type]
+    priv_pool = priv_pool.dropna(subset=["area_sqm", "floor_mid", "price_psm", "price"])
+
+    if priv_pool.empty:
+        st.warning("No transactions found. Try widening filters.")
+        st.stop()
+
+    priv_pool["similarity_score"] = _priv_similarity(
+        priv_pool, priv_area, floor_range_mid(priv_floor_rng), priv_tenure, priv_cur_year
+    )
+    priv_comps = priv_pool.nsmallest(20, "similarity_score").copy().reset_index(drop=True)
+    priv_comps["rank"] = priv_comps.index + 1
+
+    pw              = 1.0 / (priv_comps["similarity_score"] + 0.01)
+    priv_implied_fv = weighted_median(priv_comps["price"].values, pw.values)
+    priv_med_psm    = float(priv_pool["price_psm"].median())
+    priv_n_comps    = len(priv_comps)
+    priv_subj_psm   = priv_asking_price / priv_area if priv_asking_price > 0 else np.nan
+    priv_mkt_pct    = pct_rank(priv_asking_price, priv_pool["price"]) if priv_asking_price > 0 else np.nan
+    priv_psm_vs_med = (
+        (priv_subj_psm - priv_med_psm) / priv_med_psm * 100
+        if priv_asking_price > 0 and not np.isnan(priv_subj_psm) else np.nan
+    )
+    dist_name = DISTRICT_CENTROIDS[priv_district][0]
+
+    # Section 1: Executive Summary
+    st.markdown("---")
+    st.subheader(f"1️⃣ Executive Summary — D{priv_district:02d} {dist_name} | {priv_prop_type}")
+    ec1, ec2, ec3, ec4 = st.columns(4)
+    ec1.metric("Comparable Transactions", str(priv_n_comps))
+    ec2.metric("Implied Fair Value", fmt_price(priv_implied_fv))
+    if priv_asking_price > 0 and not np.isnan(priv_mkt_pct):
+        ec3.metric("Market Percentile", f"{priv_mkt_pct:.1f}th",
+                   delta=f"{'above' if priv_mkt_pct > 50 else 'below'} median")
+    else:
+        ec3.metric("Market Percentile", "—", help="Provide asking price to calculate")
+    if priv_asking_price > 0 and not np.isnan(priv_subj_psm):
+        ec4.metric("PSM vs District Median", f"${priv_subj_psm:,.0f}/sqm",
+                   delta=f"{priv_psm_vs_med:+.1f}% vs ${priv_med_psm:,.0f}/sqm",
+                   delta_color="inverse")
+    else:
+        ec4.metric("District Median PSM", f"${priv_med_psm:,.0f}/sqm")
+
+    if priv_asking_price > 0 and not np.isnan(priv_implied_fv):
+        gap = (priv_asking_price - priv_implied_fv) / priv_implied_fv * 100
+        if gap > 1.0:
+            st.warning(f"⚠️ Asking {fmt_price(priv_asking_price)} is {gap:.1f}% above "
+                       f"implied FV {fmt_price(priv_implied_fv)} — room to negotiate.")
+        elif gap < -1.0:
+            st.success(f"✅ Asking {fmt_price(priv_asking_price)} is {abs(gap):.1f}% below "
+                       f"implied FV {fmt_price(priv_implied_fv)} — potential opportunity.")
+        else:
+            st.info(f"ℹ️ Asking price broadly in line with implied FV {fmt_price(priv_implied_fv)}.")
+
+    # Section 2: Comps Table
+    st.markdown("---")
+    st.subheader("2️⃣ Comparable Transactions (Top 20)")
+    st.caption("Similarity: area 35%, floor 20%, tenure match 20%, recency 25%.")
+    priv_disp = priv_comps[[
+        "rank", "project", "floor_range", "area_sqm", "tenure_clean",
+        "type_of_sale", "contract_date", "price", "price_psm", "similarity_score",
+    ]].copy()
+    priv_disp["contract_date"]    = priv_disp["contract_date"].dt.strftime("%Y-%m")
+    priv_disp["price"]            = priv_disp["price"].apply(lambda x: f"${x:,.0f}")
+    priv_disp["price_psm"]        = priv_disp["price_psm"].apply(lambda x: f"${x:,.0f}")
+    priv_disp["area_sqm"]         = priv_disp["area_sqm"].apply(lambda x: f"{x:.0f}")
+    priv_disp["similarity_score"] = priv_disp["similarity_score"].apply(lambda x: f"{x:.3f}")
+    priv_disp.columns = ["#", "Project", "Floor Range", "Area (sqm)", "Tenure",
+                         "Sale Type", "Sale Date", "Price ($)", "PSM ($/sqm)", "Similarity"]
+    st.dataframe(priv_disp, use_container_width=True, hide_index=True)
+
+    # Section 3: Price Distribution
+    st.markdown("---")
+    st.subheader("3️⃣ Price Distribution")
+    fig_ph = go.Figure()
+    fig_ph.add_trace(go.Histogram(x=priv_pool["price"], nbinsx=40,
+                                  name="All Transactions", marker_color="#4C78A8", opacity=0.75))
+    fig_ph.add_vline(x=priv_implied_fv, line_dash="dash", line_color="#E45756",
+                     annotation_text=f"Implied FV {fmt_price(priv_implied_fv)}",
+                     annotation_position="top right", annotation_font_color="#E45756")
+    if priv_asking_price > 0:
+        fig_ph.add_vline(x=priv_asking_price, line_dash="dot", line_color="#54A24B",
+                         annotation_text=f"Asking {fmt_price(priv_asking_price)}",
+                         annotation_position="top left", annotation_font_color="#54A24B")
+    fig_ph.update_layout(
+        xaxis_title="Price ($)", yaxis_title="Transactions",
+        title=f"D{priv_district:02d} {priv_prop_type} — Price Distribution ({priv_range})",
+        height=420,
+    )
+    st.plotly_chart(fig_ph, use_container_width=True)
+
+    # Section 4: Floor Premium
+    st.markdown("---")
+    st.subheader("4️⃣ Floor Range Premium Analysis")
+    priv_fp = priv_pool.dropna(subset=["floor_mid", "price_psm"]).copy()
+    if not priv_fp.empty:
+        ba = (priv_fp.groupby("floor_range")
+              .agg(median_psm=("price_psm", "median"), count=("price_psm", "size"))
+              .reset_index())
+        ba["floor_order"] = ba["floor_range"].apply(floor_range_mid)
+        ba = ba.sort_values("floor_order").reset_index(drop=True)
+        if len(ba) >= 2:
+            g0 = ba.iloc[0]["median_psm"]
+            ba["premium_pct"] = (ba["median_psm"] - g0) / g0 * 100
+            colors_fp = ["#E45756" if r["floor_range"] == priv_floor_rng else "#4C78A8"
+                         for _, r in ba.iterrows()]
+            fig_fp = go.Figure()
+            fig_fp.add_trace(go.Bar(x=ba["floor_range"], y=ba["median_psm"],
+                                    name="Median PSM ($)", marker_color=colors_fp,
+                                    text=[f"${v:,.0f}" for v in ba["median_psm"]],
+                                    textposition="outside", yaxis="y1"))
+            fig_fp.add_trace(go.Scatter(x=ba["floor_range"], y=ba["premium_pct"],
+                                        name="Premium vs Lowest (%)", mode="lines+markers",
+                                        line=dict(color="#F58518", width=2), yaxis="y2"))
+            fig_fp.update_layout(
+                xaxis_title="Floor Range", height=420,
+                yaxis=dict(title="Median PSM ($)"),
+                yaxis2=dict(title="Premium (%)", overlaying="y", side="right", showgrid=False),
+                title=f"D{priv_district:02d} {priv_prop_type} — Floor Range vs Median PSM",
+                legend=dict(orientation="h", y=1.08),
+            )
+            st.plotly_chart(fig_fp, use_container_width=True)
+    else:
+        st.info("Insufficient data for floor premium analysis.")
+
+    # Section 5: Trend
+    st.markdown("---")
+    st.subheader("5️⃣ Market Trend Context")
+    pt_cutoff = pd.Timestamp(priv_today) - pd.DateOffset(months=24)
+    pt_df = cdf_all[
+        (cdf_all["district"]              == priv_district)
+        & (cdf_all["property_type_broad"] == priv_prop_type)
+        & (cdf_all["contract_date"]       >= pt_cutoff)
+    ].dropna(subset=["price_psm"]).copy()
+    if not pt_df.empty:
+        pt_df["month_ts"] = pt_df["contract_date"].dt.to_period("M").dt.to_timestamp()
+        pm = (pt_df.groupby("month_ts")["price_psm"].median().reset_index()
+              .rename(columns={"month_ts": "month", "price_psm": "median_psm"}))
+        fig_pt = go.Figure()
+        fig_pt.add_trace(go.Scatter(x=pm["month"], y=pm["median_psm"],
+                                    mode="lines+markers", name="Median PSM",
+                                    line=dict(color="#4C78A8", width=2.5), fill="tozeroy",
+                                    fillcolor="rgba(76,120,168,0.15)"))
+        fig_pt.update_layout(xaxis_title="Month", yaxis_title="Median PSM ($/sqm)",
+                              title=f"D{priv_district:02d} {priv_prop_type} — Monthly Median PSM",
+                              height=380)
+        st.plotly_chart(fig_pt, use_container_width=True)
+    else:
+        st.info("Insufficient data for trend analysis.")
+
+    # Section 6: Data Confidence
+    st.markdown("---")
+    st.subheader("6️⃣ Data Confidence & Assumptions")
+    conf = "🟢 High" if priv_n_comps >= 10 else ("🟡 Medium" if priv_n_comps >= 5 else "🔴 Low")
+    st.info(
+        f"**Comparables used:** {priv_n_comps}  \n"
+        f"**Year range:** {priv_range}  \n"
+        f"**Similarity:** area 35%, floor 20%, tenure 20%, recency 25%  \n"
+        f"**Confidence:** {conf}  \n"
+        f"**Data:** URA Private Caveats (Aug 2021–2026, ~5 years)"
+    )
+
+    # Section 7: Export
+    st.markdown("---")
+    st.subheader("📤 Share & Export")
+    priv_csv = priv_comps[[
+        "project", "floor_range", "area_sqm", "tenure_clean", "type_of_sale",
+        "contract_date", "price", "price_psm", "similarity_score",
+    ]].copy()
+    priv_csv["contract_date"] = priv_csv["contract_date"].dt.strftime("%Y-%m")
+    st.download_button(
+        "⬇️ Download Comps Table as CSV",
+        data=priv_csv.to_csv(index=False).encode("utf-8"),
+        file_name=f"priv_comps_D{priv_district:02d}_{priv_prop_type.replace('/', '_')}_{priv_today}.csv",
+        mime="text/csv",
+    )
+
+
+# ════════════════════════════════════════════════════════════════════════════
+# DISPATCH: private mode exits early; HDB mode continues below at top level
+# ════════════════════════════════════════════════════════════════════════════
+if mode_comps != "🏘️ HDB Resale":
+    _run_private_comps()
+    st.stop()
+
+# ── HDB RESALE MODE ───────────────────────────────────────────────────────────
 towns      = sorted(df_all["town"].dropna().unique().tolist())
 flat_types = sorted(df_all["flat_type"].dropna().unique().tolist())
 
@@ -710,3 +1004,4 @@ text_summary = (
 
 st.markdown("**Copy-to-Clipboard Summary:**")
 st.code(text_summary, language=None)
+

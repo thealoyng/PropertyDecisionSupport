@@ -100,6 +100,7 @@ st.divider()
     tab_future,
     tab_supply,
     tab_interchange,
+    tab_bto_map,
 ) = st.tabs(
     [
         "🏘️ BTO vs non-BTO towns",
@@ -109,6 +110,7 @@ st.divider()
         "🔭 Future dev baseline",
         "📦 Supply vs volume",
         "🔀 Interchange premium",
+        "🗺️ BTO & Developments Map",
     ]
 )
 
@@ -676,3 +678,126 @@ with tab_interchange:
                 hide_index=True,
                 width='stretch',
             )
+
+# ================================================================
+# 8. BTO & Developments Map (folium interactive map)
+# ================================================================
+with tab_bto_map:
+    st.subheader("🗺️ BTO & Future Developments Map")
+    st.write(
+        "Each pin is a BTO project (colour = classification) or planned future "
+        "growth area from the URA Draft Master Plan 2025."
+    )
+
+    try:
+        import folium
+        from streamlit_folium import st_folium
+    except ImportError:
+        st.error("folium / streamlit-folium not installed. Run `pip install folium streamlit-folium`.")
+        st.stop()
+
+    bto_map_df = load_bto()
+    future_map_df = load_future()
+    mrt_map_df = load_mrt()
+
+    COLORS_CLS = {"Standard": "green", "Plus": "orange", "Prime": "red"}
+    BATCH_ORDER_M = [
+        "Oct 2024", "Feb 2025", "Jul 2025", "Oct 2025",
+        "Feb 2026", "Jun 2026", "Oct 2026",
+    ]
+
+    if bto_map_df.empty and future_map_df.empty:
+        st.warning("No BTO or future development data available.")
+    else:
+        if not bto_map_df.empty and "classification" in bto_map_df.columns:
+            bto_map_df = bto_map_df.rename(columns={"classification": "cls"})
+
+        batches_present_m = []
+        if not bto_map_df.empty and "batch" in bto_map_df.columns:
+            batches_present_m = [b for b in BATCH_ORDER_M if b in set(bto_map_df["batch"])]
+
+        mc1, mc2 = st.columns(2)
+        with mc1:
+            show_cls = st.multiselect(
+                "Classification", ["Standard", "Plus", "Prime"],
+                default=["Standard", "Plus", "Prime"], key="bto_map_cls",
+            )
+        with mc2:
+            show_batches_m = st.multiselect(
+                "Launch exercise", batches_present_m,
+                default=batches_present_m, key="bto_map_batch",
+            )
+
+        show_mrt_m = st.checkbox("Show MRT stations", value=True, key="bto_map_mrt")
+        show_future_m = st.checkbox(
+            "Show URA Master Plan 2025 future growth areas", value=True, key="bto_map_future"
+        )
+
+        m_bto = folium.Map(location=[1.3521, 103.8198], zoom_start=11, tiles="cartodbpositron")
+
+        # BTO projects
+        if not bto_map_df.empty and "cls" in bto_map_df.columns:
+            pts_m = bto_map_df[bto_map_df["cls"].isin(show_cls)]
+            if "batch" in pts_m.columns and show_batches_m:
+                pts_m = pts_m[pts_m["batch"].isin(show_batches_m)]
+            for _, p in pts_m.iterrows():
+                batch = p.get("batch", "")
+                units = p.get("units", "")
+                lines_popup = [
+                    f"<b>{p['name']}</b>", f"{p.get('town', '')}",
+                    f"{p['cls']}" + (f" · {batch}" if batch else ""),
+                ]
+                if pd.notna(units) and str(units).strip() not in ("", "nan"):
+                    lines_popup.append(f"{int(float(units)):,} units")
+                folium.CircleMarker(
+                    location=[p["lat"], p["lon"]],
+                    radius=9,
+                    color=COLORS_CLS.get(p["cls"], "gray"),
+                    fill=True,
+                    fill_opacity=0.85,
+                    popup="<br>".join(lines_popup),
+                    tooltip=f"{p['name']} ({p['cls']})",
+                ).add_to(m_bto)
+
+        # Future developments
+        if show_future_m and not future_map_df.empty:
+            for _, d in future_map_df.iterrows():
+                dtype = d.get("type", "")
+                flines = [f"<b>{d['name']}</b>", f"<i>Future {str(dtype).lower()}</i>"]
+                homes = d.get("homes", "")
+                if pd.notna(homes) and str(homes).strip() not in ("", "nan"):
+                    flines.append(f"Planned homes: {homes}")
+                icon_nm = "briefcase" if str(dtype).lower() == "business node" else "home"
+                folium.Marker(
+                    location=[d["lat"], d["lon"]],
+                    popup=folium.Popup("<br>".join(flines), max_width=280),
+                    tooltip=f"{d['name']} (future {str(dtype).lower()})",
+                    icon=folium.Icon(color="purple", icon=icon_nm, prefix="fa"),
+                ).add_to(m_bto)
+
+        # MRT stations
+        if show_mrt_m and not mrt_map_df.empty:
+            for _, s in mrt_map_df.iterrows():
+                color_line = LINE_COLORS.get(s["line"], "#888888")
+                folium.CircleMarker(
+                    location=[s["lat"], s["lon"]],
+                    radius=5,
+                    color=color_line,
+                    fill=True,
+                    fill_opacity=0.9,
+                    weight=1.5,
+                    tooltip=s["name"],
+                ).add_to(m_bto)
+
+        st_folium(m_bto, use_container_width=True, height=500)
+
+        l1, l2, l3 = st.columns(3)
+        l1.markdown("🟢 **Standard** — largest supply, fewest restrictions")
+        l2.markdown("🟠 **Plus** — choicer location, more subsidy")
+        l3.markdown("🔴 **Prime** — central, most subsidy, 10-yr MOP")
+        if show_future_m and not future_map_df.empty:
+            st.markdown("🟣 **Purple pins** — URA Draft Master Plan 2025 future growth areas")
+        st.caption(
+            "BTO data from HDB sales-launch announcements. "
+            "Future areas from URA Draft Master Plan 2025 — indicative and subject to change."
+        )

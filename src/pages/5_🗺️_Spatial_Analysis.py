@@ -143,6 +143,7 @@ st.divider()
     tab_hotcold,
     tab_mrt_prox,
     tab_mrt_line,
+    tab_explorer,
 ) = st.tabs(
     [
         "\U0001f4cd Bubble map",
@@ -152,6 +153,7 @@ st.divider()
         "\U0001f321\ufe0f Hot vs Cold",
         "\U0001f687 MRT proximity",
         "\U0001f6e4\ufe0f Price along lines",
+        "🧭 Explorer Map",
     ]
 )
 
@@ -669,3 +671,183 @@ with tab_mrt_line:
             st.info("Select at least one MRT line to display.")
     else:
         st.warning("MRT station data not available.")
+
+# ================================================================
+# 8. Explorer Map (interactive pydeck block/town price map)
+# ================================================================
+with tab_explorer:
+    st.subheader("🧭 Resale Explorer Map")
+    st.write(
+        "Zoom and pan around Singapore to explore resale prices at the block or town level. "
+        "Hover over any point to see detailed stats."
+    )
+
+    FLAT_TYPES_EX = sorted(df["flat_type"].dropna().unique())
+
+    @st.cache_data
+    def load_coords_ex():
+        try:
+            coords = pd.read_csv(
+                os.path.join(os.path.dirname(__file__), "..", "data", "address_coords.csv")
+            )
+            coords["block"] = coords["block"].astype(str)
+            if coords["lat"].notna().sum() > 0:
+                return coords
+        except FileNotFoundError:
+            pass
+        return None
+
+    coords_df_ex = load_coords_ex()
+    has_block_coords_ex = coords_df_ex is not None
+
+    ctrl1, ctrl2, ctrl3 = st.columns([2, 2, 2])
+    min_yr_ex = int(df["year"].min())
+    max_yr_ex = int(df["year"].max())
+    with ctrl1:
+        yr_range_ex = st.slider(
+            "Year range", min_yr_ex, max_yr_ex,
+            (max(min_yr_ex, max_yr_ex - 5), max_yr_ex), key="ex_yr",
+        )
+    with ctrl2:
+        sel_flat_ex = st.multiselect(
+            "Flat type", FLAT_TYPES_EX, default=FLAT_TYPES_EX, key="ex_flat"
+        )
+    with ctrl3:
+        color_by_ex = st.selectbox(
+            "Colour by",
+            ["Median price/sqm", "Median price", "Transaction volume", "Avg remaining lease"],
+            key="ex_color",
+        )
+
+    layer_mode_ex = st.radio(
+        "Map layer", ["Heatmap", "Hex bins", "Scatter"], horizontal=True, key="ex_layer"
+    )
+
+    mask_ex = (df["year"] >= yr_range_ex[0]) & (df["year"] <= yr_range_ex[1])
+    if sel_flat_ex:
+        mask_ex &= df["flat_type"].isin(sel_flat_ex)
+    filt_ex = df[mask_ex].copy()
+
+    if len(filt_ex) == 0:
+        st.warning("No data for the selected filters.")
+    else:
+        if has_block_coords_ex:
+            filt_ex["block"] = filt_ex["block"].astype(str)
+            merged_ex = filt_ex.merge(
+                coords_df_ex[["block", "street_name", "lat", "lon"]],
+                on=["block", "street_name"], how="left",
+            )
+            for town, (lat, lon) in TOWN_CENTROIDS.items():
+                m = (merged_ex["town"] == town) & merged_ex["lat"].isna()
+                merged_ex.loc[m, "lat"] = lat
+                merged_ex.loc[m, "lon"] = lon
+            merged_ex = merged_ex.dropna(subset=["lat", "lon"])
+            agg_ex = (
+                merged_ex.groupby(["block", "street_name", "lat", "lon", "town"])
+                .agg(
+                    median_price=("resale_price", "median"),
+                    median_psm=("price_per_sqm", "median"),
+                    volume=("resale_price", "count"),
+                    avg_lease=("remaining_lease_yrs", "mean"),
+                )
+                .reset_index()
+            )
+        else:
+            agg_ex = (
+                filt_ex.groupby("town")
+                .agg(
+                    median_price=("resale_price", "median"),
+                    median_psm=("price_per_sqm", "median"),
+                    volume=("resale_price", "count"),
+                    avg_lease=("remaining_lease_yrs", "mean"),
+                )
+                .reset_index()
+            )
+            agg_ex["lat"] = agg_ex["town"].map(lambda t: TOWN_CENTROIDS.get(t, (1.35, 103.82))[0])
+            agg_ex["lon"] = agg_ex["town"].map(lambda t: TOWN_CENTROIDS.get(t, (1.35, 103.82))[1])
+            agg_ex["block"] = ""
+            agg_ex["street_name"] = agg_ex["town"]
+
+        for c in ["median_price", "median_psm", "avg_lease"]:
+            agg_ex[c] = agg_ex[c].round(0)
+
+        col_map_ex = {
+            "Median price/sqm": "median_psm",
+            "Median price": "median_price",
+            "Transaction volume": "volume",
+            "Avg remaining lease": "avg_lease",
+        }
+        color_col_ex = col_map_ex[color_by_ex]
+        vmin_ex = agg_ex[color_col_ex].quantile(0.05)
+        vmax_ex = agg_ex[color_col_ex].quantile(0.95)
+        if vmax_ex == vmin_ex:
+            vmax_ex = vmin_ex + 1
+
+        def val_to_rgb_ex(val):
+            t = np.clip((val - vmin_ex) / (vmax_ex - vmin_ex), 0, 1)
+            return [int(255 * t), int(255 * (1 - t)), 60, 180]
+
+        agg_ex["color"] = agg_ex[color_col_ex].apply(val_to_rgb_ex)
+
+        def _build_tooltip_ex(r):
+            return (
+                f"{'Blk ' + str(r['block']) + ', ' if r.get('block') else ''}"
+                f"{r.get('street_name', r.get('town', ''))}\n"
+                f"Town: {r.get('town', 'N/A')}\n"
+                f"Median Price: ${r['median_price']:,.0f}\n"
+                f"Price/sqm: ${r['median_psm']:,.0f}\n"
+                f"Transactions: {int(r['volume'])}\n"
+                f"Avg Lease: {r['avg_lease']:.0f} yrs"
+            )
+
+        agg_ex["tooltip_text"] = agg_ex.apply(_build_tooltip_ex, axis=1)
+
+        view_ex = pdk.ViewState(latitude=1.3521, longitude=103.8198, zoom=10.5, pitch=35)
+
+        if layer_mode_ex == "Heatmap":
+            layer_ex = pdk.Layer(
+                "HeatmapLayer", data=agg_ex,
+                get_position=["lon", "lat"], get_weight=color_col_ex,
+                radiusPixels=50, intensity=1, threshold=0.1,
+            )
+        elif layer_mode_ex == "Hex bins":
+            layer_ex = pdk.Layer(
+                "HexagonLayer", data=agg_ex,
+                get_position=["lon", "lat"], radius=400,
+                elevation_scale=4, elevation_range=[0, 1000],
+                extruded=True, pickable=True, auto_highlight=True,
+            )
+        else:
+            max_vol_ex = agg_ex["volume"].quantile(0.95) if len(agg_ex) > 0 else 1
+            agg_ex["radius"] = (agg_ex["volume"] / max(max_vol_ex, 1) * 300).clip(30, 500)
+            layer_ex = pdk.Layer(
+                "ScatterplotLayer", data=agg_ex,
+                get_position=["lon", "lat"], get_fill_color="color",
+                get_radius="radius", pickable=True, auto_highlight=True, opacity=0.7,
+            )
+
+        tooltip_ex = (
+            {"text": "{tooltip_text}"} if layer_mode_ex != "Hex bins"
+            else {"text": "Hexagon\nCount: {elevationValue}"}
+        )
+        deck_ex = pdk.Deck(
+            layers=[layer_ex], initial_view_state=view_ex, tooltip=tooltip_ex,
+            map_style="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
+        )
+        st.pydeck_chart(deck_ex, use_container_width=True)
+
+        st.divider()
+        s1, s2, s3, s4 = st.columns(4)
+        s1.metric("Total transactions", f"{int(agg_ex['volume'].sum()):,}")
+        s2.metric("Median price", f"${agg_ex['median_price'].median():,.0f}")
+        s3.metric("Median $/sqm", f"${agg_ex['median_psm'].median():,.0f}")
+        s4.metric("Avg lease", f"{agg_ex['avg_lease'].mean():.0f} yrs")
+        data_mode_ex = (
+            "block-level" if has_block_coords_ex
+            else "town-level (run geocode_resale.py for block detail)"
+        )
+        st.caption(
+            f"Map granularity: {data_mode_ex} | "
+            f"Showing {yr_range_ex[0]}–{yr_range_ex[1]} | "
+            f"{len(agg_ex):,} points"
+        )

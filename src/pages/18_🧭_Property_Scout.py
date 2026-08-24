@@ -20,7 +20,10 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 
-from eda_helpers import load_clean, load_mrt, fmt_price, TOWN_CENTROIDS
+from eda_helpers import (
+    load_clean, load_mrt, fmt_price, TOWN_CENTROIDS,
+    load_condo_clean, DISTRICT_CENTROIDS, floor_range_mid,
+)
 
 # ── page config ────────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -31,8 +34,17 @@ st.set_page_config(
 
 st.title("\U0001f9ed Property Scout")
 st.caption(
-    "Smart Money: find the right town for your client, then compare shortlisted options side-by-side."
+    "Smart Money: find the right area for your client, then compare shortlisted options side-by-side. "
+    "Toggle between HDB Resale towns and Private (Condo) districts."
 )
+
+mode_scout = st.radio(
+    "Property type",
+    ["🏘️ HDB Resale", "🏢 Private (Condo)"],
+    horizontal=True,
+    key="scout_mode",
+)
+st.divider()
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
 COORDS_CSV = os.path.join(DATA_DIR, "address_coords.csv")
@@ -318,17 +330,210 @@ def psm_trend_data(towns: tuple, flat_type: str, year_range: int):
 # TABS
 # ══════════════════════════════════════════════════════════════════════════════
 
+# ── Private-mode helper functions ──────────────────────────────────────────────
+
+@st.cache_data
+def load_condo_for_scout():
+    """Load and lightly pre-process condo_clean for scout analysis."""
+    df = load_condo_clean()
+    if df.empty:
+        return df
+    df = df[df["property_type_broad"].isin(["Condo/Apartment", "EC"])].copy()
+    df["contract_date"] = pd.to_datetime(df["contract_date"], errors="coerce")
+    return df
+
+
+@st.cache_data
+def compute_district_metrics(max_budget: float, prop_types: tuple):
+    """Compute per-district metrics for the private shortlister (Tab 1)."""
+    df = load_condo_for_scout()
+    if df.empty:
+        return pd.DataFrame()
+    if prop_types:
+        df = df[df["property_type_broad"].isin(prop_types)]
+    max_date = df["contract_date"].max()
+    cutoff_3yr = max_date - pd.DateOffset(years=3)
+    cutoff_5yr = max_date - pd.DateOffset(years=5)
+    cutoff_7yr = max_date - pd.DateOffset(years=7)
+    df3 = df[df["contract_date"] >= cutoff_3yr].copy()
+    df_l2 = df[df["contract_date"] >= max_date - pd.DateOffset(years=2)].copy()
+    df_5a = df[(df["contract_date"] >= cutoff_7yr) & (df["contract_date"] < cutoff_5yr)].copy()
+
+    records = []
+    for dist_num, (dist_name, d_lat, d_lon) in DISTRICT_CENTROIDS.items():
+        t3 = df3[df3["district"] == dist_num]
+        tl2 = df_l2[df_l2["district"] == dist_num]
+        t5a = df_5a[df_5a["district"] == dist_num]
+        if t3.empty:
+            continue
+        psm = t3["price_psm"].dropna()
+        median_psm = float(psm.median()) if not psm.empty else np.nan
+        psm_std = float(psm.std()) if len(psm) > 1 else 0.0
+        txn_count = len(t3)
+        affordability_count = int((t3["price"].dropna() <= max_budget).sum())
+        freehold_pct = float((t3["tenure_clean"] == "Freehold").mean() * 100) if not t3.empty else 0.0
+        # price growth
+        psm_l2 = float(tl2["price_psm"].median()) if not tl2.empty else np.nan
+        psm_5a = float(t5a["price_psm"].median()) if not t5a.empty else np.nan
+        if pd.notna(psm_l2) and pd.notna(psm_5a) and psm_5a > 0:
+            price_growth = (psm_l2 - psm_5a) / psm_5a * 100
+        else:
+            price_growth = np.nan
+        records.append({
+            "district": dist_num,
+            "district_name": dist_name,
+            "d_lat": d_lat,
+            "d_lon": d_lon,
+            "median_psm": median_psm,
+            "psm_std": psm_std,
+            "transaction_count": txn_count,
+            "affordability_count": affordability_count,
+            "freehold_pct": freehold_pct,
+            "price_growth_5yr": price_growth,
+        })
+    if not records:
+        return pd.DataFrame()
+    result = pd.DataFrame(records).set_index("district")
+    # MRT proximity
+    mrt_df = load_mrt_data()
+    mrt_prox = []
+    for dist_num in result.index:
+        d_lat = result.loc[dist_num, "d_lat"]
+        d_lon = result.loc[dist_num, "d_lon"]
+        if mrt_df.empty or "lat" not in mrt_df.columns:
+            mrt_prox.append(1.0)
+        else:
+            dists = mrt_df.apply(
+                lambda r: haversine_km(d_lat, d_lon, r["lat"], r["lon"]), axis=1
+            )
+            mrt_prox.append(float(dists.min()))
+    result["mrt_distance_km"] = mrt_prox
+    result["mrt_proximity_score"] = 1.0 / (1.0 + result["mrt_distance_km"])
+    return result
+
+
+@st.cache_data
+def build_district_shortlist(max_budget: float, prop_types: tuple, priority_weights: tuple):
+    """Compute composite scores for all districts (private mode Tab 1)."""
+    df = compute_district_metrics(max_budget, prop_types)
+    if df.empty:
+        return df
+    # Normalise to [0,1]
+    def _minmax(s):
+        lo, hi = s.min(), s.max()
+        return pd.Series(0.5, index=s.index) if hi == lo else (s - lo) / (hi - lo)
+
+    df["norm_mrt_proximity"]    = _minmax(df["mrt_proximity_score"])
+    df["norm_affordable_psm"]   = _minmax(-df["median_psm"].fillna(df["median_psm"].max()))
+    df["norm_transaction_count"]= _minmax(df["transaction_count"])
+    df["norm_low_volatility"]   = _minmax(-df["psm_std"].fillna(df["psm_std"].max()))
+    df["norm_price_growth"]     = _minmax(df["price_growth_5yr"].fillna(df["price_growth_5yr"].median()))
+    df["norm_freehold"]         = _minmax(df["freehold_pct"])
+
+    PRIV_PRIORITY_MAP = {
+        "Near MRT":           "norm_mrt_proximity",
+        "Affordable PSM":     "norm_affordable_psm",
+        "High liquidity":     "norm_transaction_count",
+        "Low volatility":     "norm_low_volatility",
+        "Price growth (5yr)": "norm_price_growth",
+        "Freehold available": "norm_freehold",
+    }
+    total_weight = 0.0
+    weighted_sum = pd.Series(0.0, index=df.index)
+    for label, w in priority_weights:
+        col = PRIV_PRIORITY_MAP.get(label)
+        if col and col in df.columns:
+            weighted_sum += df[col] * w
+            total_weight += w
+    if total_weight > 0:
+        df["composite_score"] = (weighted_sum / total_weight * 100).round(1)
+    else:
+        df["composite_score"] = df[[c for c in PRIV_PRIORITY_MAP.values() if c in df.columns]].mean(axis=1) * 100
+    return df.sort_values("composite_score", ascending=False)
+
+
+@st.cache_data
+def compute_district_comparison(districts: tuple, prop_type_broad: str, year_range: int):
+    """Compute comparison metrics per district for Tab 2 private mode."""
+    df = load_condo_for_scout()
+    if df.empty:
+        return {}, pd.DataFrame()
+    max_date = df["contract_date"].max()
+    cutoff = max_date - pd.DateOffset(years=year_range)
+    base = df[
+        (df["property_type_broad"] == prop_type_broad)
+        & (df["contract_date"] >= cutoff)
+        & (df["district"].isin(districts))
+    ].copy()
+    summary = {}
+    for d in districts:
+        t = base[base["district"] == d]
+        if t.empty:
+            summary[d] = None
+            continue
+        psm = t["price_psm"].dropna()
+        cutoff_1yr = max_date - pd.DateOffset(years=1)
+        t_1yr  = t[t["contract_date"] >= cutoff_1yr]["price_psm"].dropna()
+        t_prev = t[t["contract_date"] < cutoff_1yr]["price_psm"].dropna()
+        psm_1yr_chg = (
+            (t_1yr.median() - t_prev.median()) / t_prev.median() * 100
+            if not t_1yr.empty and not t_prev.empty and t_prev.median() > 0
+            else np.nan
+        )
+        tenure_mode = t["tenure_clean"].mode()[0] if not t["tenure_clean"].dropna().empty else "N/A"
+        summary[d] = {
+            "median_psm":        float(psm.median()) if not psm.empty else np.nan,
+            "psm_p10":           float(psm.quantile(0.10)) if not psm.empty else np.nan,
+            "psm_p90":           float(psm.quantile(0.90)) if not psm.empty else np.nan,
+            "transaction_count": len(t),
+            "psm_1yr_chg":       psm_1yr_chg,
+            "new_sale_pct":      float((t["type_of_sale"] == "New Sale").mean() * 100),
+            "resale_pct":        float((t["type_of_sale"] == "Resale").mean() * 100),
+            "freehold_pct":      float((t["tenure_clean"] == "Freehold").mean() * 100),
+            "most_common_tenure":tenure_mode,
+        }
+    return summary, base
+
+
+@st.cache_data
+def district_psm_trend(districts: tuple, prop_type_broad: str, year_range: int):
+    """Monthly median PSM trend for selected districts (private mode)."""
+    df = load_condo_for_scout()
+    if df.empty:
+        return pd.DataFrame()
+    max_date = df["contract_date"].max()
+    cutoff = max_date - pd.DateOffset(years=year_range)
+    base = df[
+        (df["property_type_broad"] == prop_type_broad)
+        & (df["contract_date"] >= cutoff)
+        & (df["district"].isin(districts))
+    ].copy()
+    if base.empty:
+        return pd.DataFrame()
+    base["month_ts"] = base["contract_date"].dt.to_period("M").dt.to_timestamp()
+    trend = (
+        base.groupby(["month_ts", "district"])["price_psm"]
+        .median()
+        .reset_index()
+        .rename(columns={"month_ts": "month", "price_psm": "median_psm"})
+    )
+    return trend
+
+
+# ── TABS ────────────────────────────────────────────────────────────────────────
+
 tab1, tab2, tab3 = st.tabs([
-    "\U0001f3af Client Fit Shortlister",
-    "\U0001f3d9\ufe0f Town Comparison",
+    "\U0001f3af Area Shortlister",
+    "\U0001f3d9\ufe0f Area Comparison",
     "\U0001f306 Lifestyle Matching",
 ])
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# TAB 1 — Client Fit Shortlister (G4)
+# TAB 1 — Area Shortlister
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 with tab1:
-    st.subheader("\U0001f3af Client Fit Shortlister")
+  if mode_scout == "🏘️ HDB Resale":
+    st.subheader("\U0001f3af Client Fit Shortlister — HDB Towns")
     st.markdown(
         "Given a client's budget, flat type preference, and lifestyle priorities, "
         "this tool **ranks all 27 HDB towns** by composite fit score."
@@ -527,11 +732,157 @@ with tab1:
             "factors not captured here. Use as a starting point for targeted research."
         )
 
+  else:
+    # ── PRIVATE MODE: District Shortlister ────────────────────────────────────
+    st.subheader("🏢 Area Shortlister — Private Districts (D01–D28)")
+    st.markdown(
+        "Given a budget, property type, and priorities, rank all **28 Singapore postal districts** "
+        "by composite fit score using URA private transaction caveats."
+    )
+    st.warning("⚠️ Private data covers Aug 2021–2026 (~5 years). Scores based on recent market only.")
+
+    PRIV_PRIORITY_OPTIONS = [
+        "Near MRT", "Affordable PSM", "High liquidity",
+        "Low volatility", "Price growth (5yr)", "Freehold available",
+    ]
+    PRIV_PROP_TYPES = ["Condo/Apartment", "EC"]
+    PRIV_DIST_LABELS = {d: f"D{d:02d} — {name}" for d, (name, _, _) in DISTRICT_CENTROIDS.items()}
+
+    with st.form("priv_shortlist_form"):
+        pa, pb = st.columns(2)
+        with pa:
+            priv_budget = st.number_input(
+                "Max Budget ($)", 500_000, 10_000_000, 1_500_000, step=50_000,
+                format="%d", key="scout_priv_budget",
+            )
+            priv_prop_types = st.multiselect(
+                "Property Type", PRIV_PROP_TYPES, default=PRIV_PROP_TYPES,
+                key="scout_priv_type",
+            )
+        with pb:
+            priv_priorities = st.multiselect(
+                "Priorities", PRIV_PRIORITY_OPTIONS,
+                default=["Near MRT", "Affordable PSM", "Price growth (5yr)"],
+                key="scout_priv_pri",
+            )
+        if priv_priorities:
+            st.markdown("**Priority Weights** (1 = low, 5 = high)")
+            wcols = st.columns(min(len(priv_priorities), 6))
+            priv_weights = {}
+            for i, pri in enumerate(priv_priorities):
+                with wcols[i % 6]:
+                    priv_weights[pri] = st.slider(
+                        pri, 1, 5, 3, key=f"scout_priv_w_{i}"
+                    )
+        else:
+            priv_weights = {}
+        priv_submitted = st.form_submit_button("🔍 Rank Districts", type="primary")
+
+    if priv_submitted or True:
+        if not priv_prop_types:
+            st.warning("Select at least one property type.")
+            st.stop()
+        with st.spinner("Computing district scores…"):
+            priv_pw_tuple = tuple((p, priv_weights.get(p, 3)) for p in priv_priorities)
+            scored_dist = build_district_shortlist(
+                max_budget=float(priv_budget),
+                prop_types=tuple(priv_prop_types),
+                priority_weights=priv_pw_tuple,
+            )
+        if scored_dist.empty:
+            st.error("No private transaction data found. Ensure condo_clean.csv exists.")
+        else:
+            st.markdown("### 📋 Ranked Districts")
+            disp_d = scored_dist[[
+                "composite_score", "district_name", "median_psm",
+                "affordability_count", "psm_std", "mrt_distance_km",
+                "price_growth_5yr", "freehold_pct",
+            ]].copy()
+            disp_d.index = [f"D{i:02d}" for i in disp_d.index]
+            disp_d.insert(0, "Rank", range(1, len(disp_d) + 1))
+            disp_d.columns = ["Rank", "Score (/100)", "District", "Median PSM ($)",
+                               "Units in Budget", "PSM Volatility", "Nearest MRT (km)",
+                               "5yr PSM Growth (%)", "Freehold %"]
+            disp_d["Median PSM ($)"] = disp_d["Median PSM ($)"].map(
+                lambda v: f"${v:,.0f}" if pd.notna(v) else "N/A"
+            )
+            disp_d["PSM Volatility"] = disp_d["PSM Volatility"].map(
+                lambda v: f"${v:,.0f}" if pd.notna(v) else "N/A"
+            )
+            disp_d["Nearest MRT (km)"] = disp_d["Nearest MRT (km)"].map(
+                lambda v: f"{v:.2f}" if pd.notna(v) else "N/A"
+            )
+            disp_d["5yr PSM Growth (%)"] = disp_d["5yr PSM Growth (%)"].map(
+                lambda v: f"{v:+.1f}%" if pd.notna(v) else "N/A"
+            )
+            disp_d["Freehold %"] = disp_d["Freehold %"].map(
+                lambda v: f"{v:.0f}%" if pd.notna(v) else "N/A"
+            )
+            st.dataframe(disp_d, use_container_width=True)
+
+            top5_d = scored_dist.head(5).index.tolist()
+
+            # Radar chart (top 5 districts)
+            st.markdown("### 🕸️ Top-5 District Radar")
+            PRIV_RADAR = [
+                ("Near MRT",      "norm_mrt_proximity"),
+                ("Affordable PSM","norm_affordable_psm"),
+                ("Liquidity",     "norm_transaction_count"),
+                ("Low Volatility","norm_low_volatility"),
+                ("5yr Growth",    "norm_price_growth"),
+                ("Freehold",      "norm_freehold"),
+            ]
+            radar_labels = [r[0] for r in PRIV_RADAR]
+            radar_cols   = [r[1] for r in PRIV_RADAR]
+            fig_r2 = go.Figure()
+            for dn in top5_d:
+                if dn not in scored_dist.index:
+                    continue
+                row = scored_dist.loc[dn]
+                vals = [float(row[c]) if pd.notna(row.get(c, np.nan)) else 0.0 for c in radar_cols]
+                fig_r2.add_trace(go.Scatterpolar(
+                    r=vals + [vals[0]], theta=radar_labels + [radar_labels[0]],
+                    fill="toself", name=f"D{dn:02d}", opacity=0.65,
+                ))
+            fig_r2.update_layout(
+                polar=dict(radialaxis=dict(visible=True, range=[0, 1])),
+                showlegend=True, height=480,
+                title="Component Scores — Top 5 Districts (normalised 0-1)",
+            )
+            st.plotly_chart(fig_r2, use_container_width=True)
+
+            # Bubble chart
+            st.markdown("### 📈 Affordability vs Score")
+            bubble_d = scored_dist.reset_index()
+            bubble_d = bubble_d.dropna(subset=["median_psm"])
+            bubble_d["label"] = bubble_d["district"].apply(lambda d: f"D{d:02d}")
+            bubble_d["bubble_size"] = bubble_d["affordability_count"].clip(lower=1)
+            fig_b2 = px.scatter(
+                bubble_d, x="median_psm", y="composite_score",
+                size="bubble_size", color="composite_score",
+                hover_name="label",
+                hover_data={"median_psm": ":,.0f", "composite_score": ":.1f",
+                            "affordability_count": True, "bubble_size": False,
+                            "district_name": True},
+                color_continuous_scale="RdYlGn",
+                labels={"median_psm": "Median PSM ($)", "composite_score": "Score (/100)"},
+                title="Districts: PSM vs Score (size = units within budget)",
+                size_max=55,
+            )
+            fig_b2.update_traces(marker=dict(opacity=0.8, line=dict(width=1, color="white")))
+            st.plotly_chart(fig_b2, use_container_width=True)
+            st.info(
+                "📊 **DATA CONFIDENCE: Medium.** Based on URA private transaction caveats "
+                "(Aug 2021–2026). Does not reflect current listing availability, developer "
+                "incentives, or unit-level details."
+            )
+
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# TAB 2 — Town Comparison (G5)
+# TAB 2 — Area Comparison
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 with tab2:
+  if mode_scout == "🏘️ HDB Resale":
     st.subheader("\U0001f3d9\ufe0f Town Comparison")
     st.markdown(
         "Side-by-side statistical comparison of **2–4 towns** for a specific flat type and time window."
@@ -721,12 +1072,125 @@ with tab2:
         "Figures reflect completed transactions and may not capture current asking prices or recent market shifts."
     )
 
+  else:
+    # ── PRIVATE MODE: District Comparison ────────────────────────────────────
+    st.subheader("🏢 District Comparison — Private (Condo)")
+    st.markdown("Side-by-side comparison of **2–4 private postal districts** for a selected property type.")
+    st.warning("⚠️ Private data covers Aug 2021–2026 only.")
+
+    PRIV_DIST_OPTIONS = {d: f"D{d:02d} — {name}" for d, (name, _, _) in DISTRICT_CENTROIDS.items()}
+    PRIV_PROP_BROAD = ["Condo/Apartment", "EC"]
+    PRIV_YR_MAP = {"Last 1 year": 1, "Last 2 years": 2, "Last 3 years": 3}
+
+    dc1, dc2, dc3 = st.columns([3, 2, 2])
+    with dc1:
+        priv_dists_sel = st.multiselect(
+            "Select Districts (2–4)",
+            options=list(PRIV_DIST_OPTIONS.keys()),
+            default=[9, 15, 19],
+            format_func=lambda d: PRIV_DIST_OPTIONS[d],
+            key="scout_priv_dists",
+        )
+    with dc2:
+        priv_prop_broad = st.selectbox(
+            "Property Type", PRIV_PROP_BROAD, key="scout_priv_broad"
+        )
+    with dc3:
+        priv_yr_label = st.selectbox(
+            "Time Window", list(PRIV_YR_MAP.keys()), index=1, key="scout_priv_yr"
+        )
+        priv_yr = PRIV_YR_MAP[priv_yr_label]
+
+    if len(priv_dists_sel) < 2:
+        st.warning("Select 2–4 districts for comparison.")
+    else:
+        if len(priv_dists_sel) > 4:
+            priv_dists_sel = priv_dists_sel[:4]
+        with st.spinner("Loading district data…"):
+            priv_summary, priv_base = compute_district_comparison(
+                districts=tuple(priv_dists_sel),
+                prop_type_broad=priv_prop_broad,
+                year_range=priv_yr,
+            )
+
+        if not priv_summary:
+            st.warning("No data found for the selected districts / property type.")
+        else:
+            priv_group_stats = {
+                m: np.nanmedian([v[m] for v in priv_summary.values() if v and pd.notna(v.get(m, np.nan))])
+                for m in ["median_psm", "transaction_count", "psm_1yr_chg"]
+            }
+
+            st.markdown("### 📊 Key Metrics")
+            kpi_cols_p = st.columns(len(priv_dists_sel))
+            for col_w, d in zip(kpi_cols_p, priv_dists_sel):
+                with col_w:
+                    label = f"**D{d:02d}**"
+                    st.markdown(label)
+                    s = priv_summary.get(d)
+                    if s is None:
+                        st.warning("No data")
+                        continue
+                    v = s["median_psm"]
+                    g = priv_group_stats.get("median_psm", np.nan)
+                    st.metric("Median PSM ($/sqm)", f"${v:,.0f}" if pd.notna(v) else "N/A",
+                              delta=f"{(v-g)/g*100:+.1f}% vs group" if pd.notna(v) and pd.notna(g) and g > 0 else None,
+                              delta_color="inverse")
+                    v = s["transaction_count"]
+                    g = priv_group_stats.get("transaction_count", np.nan)
+                    st.metric("Transactions", f"{int(v):,}",
+                              delta=f"{int(v-g):+,} vs group" if pd.notna(g) else None)
+                    v = s["psm_1yr_chg"]
+                    st.metric("PSM 1yr Change", f"{v:+.1f}%" if pd.notna(v) else "N/A")
+                    p10, p90 = s["psm_p10"], s["psm_p90"]
+                    st.metric("PSM Range (P10–P90)",
+                              f"${p10:,.0f} – ${p90:,.0f}" if pd.notna(p10) and pd.notna(p90) else "N/A")
+                    st.metric("New Sale %", f"{s['new_sale_pct']:.0f}%")
+                    st.metric("Freehold %", f"{s['freehold_pct']:.0f}%")
+                    st.metric("Dominant Tenure", str(s["most_common_tenure"]))
+
+            st.divider()
+
+            # PSM violin by district
+            if not priv_base.empty:
+                priv_violin = priv_base[priv_base["district"].isin(priv_dists_sel)].dropna(subset=["price_psm"])
+                priv_violin["district_label"] = priv_violin["district"].apply(lambda d: f"D{d:02d}")
+                if not priv_violin.empty:
+                    fig_pv = px.violin(
+                        priv_violin, x="district_label", y="price_psm",
+                        color="district_label", box=True, points=False,
+                        labels={"price_psm": "Price per sqm ($)", "district_label": "District"},
+                        title=f"PSM Distribution — {priv_prop_broad} ({priv_yr_label})",
+                    )
+                    fig_pv.update_layout(showlegend=False, height=420)
+                    st.plotly_chart(fig_pv, use_container_width=True)
+
+            # PSM trend
+            priv_trend_df = district_psm_trend(
+                tuple(priv_dists_sel), priv_prop_broad, priv_yr
+            )
+            if not priv_trend_df.empty:
+                priv_trend_df["label"] = priv_trend_df["district"].apply(lambda d: f"D{d:02d}")
+                fig_pt = px.line(
+                    priv_trend_df, x="month", y="median_psm", color="label",
+                    labels={"median_psm": "Median PSM ($/sqm)", "month": "Month", "label": "District"},
+                    title=f"Monthly Median PSM — {priv_prop_broad} ({priv_yr_label})",
+                )
+                fig_pt.update_layout(height=400, hovermode="x unified")
+                st.plotly_chart(fig_pt, use_container_width=True)
+
+            st.success(
+                "📄 **DATA CONFIDENCE: Medium.** URA private caveats (Aug 2021–2026). "
+                "Figures reflect registered sale transactions only."
+            )
+
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# TAB 3 — Lifestyle-Weighted Town Matching (B6)
+# TAB 3 — Lifestyle-Weighted Area Matching
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 with tab3:
-    st.subheader("\U0001f306 Lifestyle-Weighted Town Matching (B6)")
+    area_label = "Town" if mode_scout == "🏘️ HDB Resale" else "District"
+    st.subheader(f"\U0001f306 Lifestyle-Weighted {area_label} Matching")
     st.markdown(
         "Combine amenity density, MRT access, and resale metrics into a personalised "
         "town ranking based on **your priorities** — not a generic index."
@@ -753,8 +1217,9 @@ with tab3:
         _mrt: pd.DataFrame,
         primary_only: bool,
         radius_km: float,
+        use_districts: bool = False,
     ) -> pd.DataFrame:
-        """Count amenities within radius_km of each town centroid (vectorised)."""
+        """Count amenities within radius_km of each town/district centroid (vectorised)."""
         if primary_only and not _schools.empty and "mainlevel_code" in _schools.columns:
             schools_use = _schools[_schools["mainlevel_code"].str.upper() == "PRIMARY"].copy()
         else:
@@ -765,8 +1230,15 @@ with tab3:
             if "lat" not in schools_use.columns and "latitude" in schools_use.columns:
                 schools_use = schools_use.rename(columns={"latitude": "lat", "longitude": "lon"})
 
+        # Build centroids dict: {name: (lat, lon)}
+        if use_districts:
+            centroids_iter = {f"D{d:02d} {name}": (lat, lon)
+                              for d, (name, lat, lon) in DISTRICT_CENTROIDS.items()}
+        else:
+            centroids_iter = TOWN_CENTROIDS
+
         results = []
-        for town, (t_lat, t_lon) in TOWN_CENTROIDS.items():
+        for town, (t_lat, t_lon) in centroids_iter.items():
             def _count(df: pd.DataFrame) -> int:
                 if df.empty or "lat" not in df.columns:
                     return 0
@@ -818,6 +1290,10 @@ with tab3:
         df["mrt_score"]       = (10 / (1 + df["mrt_min_km"])).round(2)
         return df.set_index("town")
 
+    if mode_scout == "🏢 Private (Condo)":
+        st.warning("⚠️ District centroids are used as reference points. "
+                   "Amenity distances are approximate straight-line from district centroid.")
+
     # ── sidebar controls ───────────────────────────────────────────────────────
     st.markdown("#### Your lifestyle priorities (0 = ignore, 10 = top priority)")
     col_s1, col_s2, col_s3 = st.columns(3)
@@ -846,6 +1322,7 @@ with tab3:
     scores_df = _compute_lifestyle_scores(
         hawker_df, cc_df, parks_df, poly_df, schools_df, mrt_df,
         primary_only=primary_only, radius_km=radius_km,
+        use_districts=(mode_scout == "🏢 Private (Condo)"),
     )
 
     # ── weighted composite ─────────────────────────────────────────────────────
@@ -860,25 +1337,46 @@ with tab3:
     ) / total_w
     scores_df["lifestyle_score"] = scores_df["lifestyle_score"].round(1)
 
-    # Add resale affordability metric from load_resale()
-    resale_df = load_resale()
-    max_dt = resale_df["month"].max()
-    cutoff = max_dt - pd.DateOffset(years=2)
-    recent = resale_df[resale_df["month"] >= cutoff]
-    town_psm = recent.groupby("town")["price_per_sqm"].median().rename("median_psm")
-    town_vol = recent.groupby("town").size().rename("tx_volume")
-    scores_df = scores_df.join(town_psm, how="left").join(town_vol, how="left")
+    # Add affordability metric
+    if mode_scout == "🏘️ HDB Resale":
+        resale_df = load_resale()
+        max_dt = resale_df["month"].max()
+        cutoff = max_dt - pd.DateOffset(years=2)
+        recent = resale_df[resale_df["month"] >= cutoff]
+        town_psm = recent.groupby("town")["price_per_sqm"].median().rename("median_psm")
+        town_vol = recent.groupby("town").size().rename("tx_volume")
+        scores_df = scores_df.join(town_psm, how="left").join(town_vol, how="left")
+    else:
+        cdf = load_condo_for_scout()
+        if not cdf.empty:
+            max_dt_c = cdf["contract_date"].max()
+            cutoff_c = max_dt_c - pd.DateOffset(years=2)
+            recent_c = cdf[cdf["contract_date"] >= cutoff_c]
+            dist_psm = recent_c.groupby("district")["price_psm"].median()
+            dist_vol = recent_c.groupby("district").size()
+            # Map district number to label used in scores_df index
+            idx_map = {f"D{d:02d} {name}": d for d, (name, _, _) in DISTRICT_CENTROIDS.items()}
+            scores_df["median_psm"] = scores_df.index.map(
+                lambda k: dist_psm.get(idx_map.get(k, -1), np.nan)
+            )
+            scores_df["tx_volume"] = scores_df.index.map(
+                lambda k: dist_vol.get(idx_map.get(k, -1), np.nan)
+            )
+        else:
+            scores_df["median_psm"] = np.nan
+            scores_df["tx_volume"] = np.nan
 
     ranked = scores_df.sort_values("lifestyle_score", ascending=False).reset_index()
 
     # ── top-10 table ───────────────────────────────────────────────────────────
-    st.markdown("#### 🏆 Top towns ranked by your lifestyle priorities")
+    area_col_label = "Town" if mode_scout == "🏘️ HDB Resale" else "District"
+    st.markdown(f"#### 🏆 Top {area_col_label}s ranked by your lifestyle priorities")
     top10_disp = ranked.head(10)[
         ["town", "lifestyle_score", "food_score", "green_score",
          "community_score", "health_score", "edu_score", "mrt_score",
          "median_psm", "tx_volume"]
     ].rename(columns={
-        "town": "Town", "lifestyle_score": "Lifestyle Score",
+        "town": area_col_label, "lifestyle_score": "Lifestyle Score",
         "food_score": "Food", "green_score": "Green",
         "community_score": "Community", "health_score": "Health",
         "edu_score": "Education", "mrt_score": "MRT",

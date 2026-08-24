@@ -158,7 +158,8 @@ with tab_roi:
         # Approximate HDB rental yield (from median rent data or fixed proxy)
         hdb_rent = _load_hdb_rental()
         if not hdb_rent.empty and "town" in hdb_rent.columns:
-            recent_rent = hdb_rent[hdb_rent["quarter"].astype(str) >= buy_end.strftime("%Y-Q%q") if hasattr(buy_end, "strftime") else "2022-Q1"]
+            q_str = f"{buy_end.year}-Q{(buy_end.month - 1) // 3 + 1}"
+            recent_rent = hdb_rent[hdb_rent["quarter"].astype(str) >= q_str]
             town_rent = recent_rent.groupby("town")["median_rent"].median().rename("annual_rent_x12") * 12
             roi_hdb = roi_hdb.join(town_rent, how="left")
             roi_hdb["gross_yield_pct"] = (roi_hdb["annual_rent_x12"] / roi_hdb["buy_price"] * 100).clip(0, 10)

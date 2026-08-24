@@ -98,7 +98,7 @@ k4.metric(
 st.divider()
 
 # ── tabs ─────────────────────────────────────────────────────────
-tab_price, tab_volume, tab_seasonal, tab_policy, tab_heatmap, tab_flat, tab_index = st.tabs(
+tab_price, tab_volume, tab_seasonal, tab_policy, tab_heatmap, tab_flat, tab_index, tab_forecast = st.tabs(
     [
         "📈 Price trend",
         "📊 Volume",
@@ -107,6 +107,7 @@ tab_price, tab_volume, tab_seasonal, tab_policy, tab_heatmap, tab_flat, tab_inde
         "🗺️ Growth heatmap",
         "🏢 By flat type",
         "📐 Price index",
+        "🔮 Price Forecast",
     ]
 )
 
@@ -464,3 +465,113 @@ with tab_index:
         st.plotly_chart(fig8, width='stretch')
     else:
         st.info("Select at least one town to display the index chart.")
+
+# ================================================================
+# 8. Price Forecast (Prophet)
+# ================================================================
+with tab_forecast:
+    st.subheader("🔮 Price Forecast (Prophet)")
+    st.write(
+        "A time-series forecast of how prices in a town might trend over the next "
+        "few years. Useful for Plus/Prime flats with a 10-year MOP. "
+        "Treat projections as trend guides, not guarantees."
+    )
+
+    TOWNS_FC = sorted(df["town"].dropna().unique())
+    FLAT_TYPES_FC = sorted(df["flat_type"].dropna().unique())
+
+    f1, f2, f3 = st.columns(3)
+    with f1:
+        f_town = st.selectbox(
+            "Town", TOWNS_FC,
+            index=TOWNS_FC.index("PUNGGOL") if "PUNGGOL" in TOWNS_FC else 0,
+            key="fc_town",
+        )
+    with f2:
+        f_type = st.selectbox(
+            "Flat type", FLAT_TYPES_FC,
+            index=FLAT_TYPES_FC.index("4 ROOM") if "4 ROOM" in FLAT_TYPES_FC else 0,
+            key="fc_type",
+        )
+    with f3:
+        years_ahead = st.slider("Years to forecast", 1, 15, 10, key="fc_years")
+
+    if st.button("Run forecast", type="primary", key="fc_run"):
+        try:
+            from prophet import Prophet
+        except ImportError:
+            st.error(
+                "Prophet is not installed in this environment. "
+                "Run `pip install prophet` and restart the app to use this tab."
+            )
+            st.stop()
+
+        sub = df[(df["town"] == f_town) & (df["flat_type"] == f_type)].copy()
+        ts = (
+            sub.groupby(sub["month"].dt.to_period("M"))["resale_price"]
+            .median()
+            .reset_index()
+        )
+        ts["month"] = ts["month"].dt.to_timestamp()
+        ts.columns = ["ds", "y"]
+        ts = ts.dropna()
+
+        if len(ts) < 36:
+            st.info(
+                "Not enough history for this town + flat type combination. "
+                "Try a more common pairing (e.g. PUNGGOL / 4 ROOM)."
+            )
+        else:
+            with st.spinner("Fitting model and projecting forward…"):
+                m_fc = Prophet(
+                    yearly_seasonality=True,
+                    weekly_seasonality=False,
+                    daily_seasonality=False,
+                    changepoint_prior_scale=0.1,
+                )
+                m_fc.fit(ts)
+                future_fc = m_fc.make_future_dataframe(
+                    periods=years_ahead * 12, freq="MS"
+                )
+                fc = m_fc.predict(future_fc)
+
+            fig_fc = go.Figure()
+            fig_fc.add_scatter(
+                x=ts["ds"], y=ts["y"], mode="lines",
+                name="Actual", line=dict(color="#5F5E5A"),
+            )
+            fig_fc.add_scatter(
+                x=fc["ds"], y=fc["yhat"], mode="lines",
+                name="Forecast", line=dict(color="#378ADD"),
+            )
+            fig_fc.add_scatter(
+                x=list(fc["ds"]) + list(fc["ds"][::-1]),
+                y=list(fc["yhat_upper"]) + list(fc["yhat_lower"][::-1]),
+                fill="toself",
+                fillcolor="rgba(55,138,221,0.15)",
+                line=dict(color="rgba(0,0,0,0)"),
+                name="Uncertainty",
+                showlegend=True,
+            )
+            fig_fc.update_layout(
+                height=420,
+                margin=dict(t=10, b=0, l=0, r=0),
+                yaxis_title="Median price ($)",
+                hovermode="x unified",
+            )
+            st.plotly_chart(fig_fc, use_container_width=True)
+
+            last_actual_year = ts["ds"].max().year
+            fut_row = fc[fc["ds"].dt.year == last_actual_year + years_ahead]
+            if len(fut_row):
+                row = fut_row.iloc[-1]
+                st.metric(
+                    f"Projected median price in {last_actual_year + years_ahead}",
+                    f"${row['yhat']:,.0f}",
+                    help="Mid-estimate; the band shows the likely range.",
+                )
+                st.caption(
+                    f"Likely range: ${row['yhat_lower']:,.0f} – ${row['yhat_upper']:,.0f}. "
+                    "This projects the recent trend forward and cannot foresee policy shocks "
+                    "or market downturns — treat it as a trend guide, not a guarantee."
+                )
