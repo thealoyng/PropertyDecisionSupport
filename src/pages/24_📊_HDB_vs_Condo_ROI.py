@@ -159,7 +159,9 @@ with tab_roi:
         hdb_rent = _load_hdb_rental()
         if not hdb_rent.empty and "town" in hdb_rent.columns:
             q_str = f"{buy_end.year}-Q{(buy_end.month - 1) // 3 + 1}"
-            recent_rent = hdb_rent[hdb_rent["quarter"].astype(str) >= q_str]
+            recent_rent = hdb_rent[hdb_rent["quarter"].astype(str) >= q_str].copy()
+            # Convert Arrow dtype to float to avoid median() error
+            recent_rent["median_rent"] = pd.to_numeric(recent_rent["median_rent"], errors="coerce")
             town_rent = recent_rent.groupby("town")["median_rent"].median().rename("annual_rent_x12") * 12
             roi_hdb = roi_hdb.join(town_rent, how="left")
             roi_hdb["gross_yield_pct"] = (roi_hdb["annual_rent_x12"] / roi_hdb["buy_price"] * 100).clip(0, 10)
