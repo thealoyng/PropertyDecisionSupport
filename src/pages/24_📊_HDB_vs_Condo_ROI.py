@@ -224,6 +224,18 @@ with tab_roi:
         roi_condo_t = roi_condo.groupby("hdb_town")["total_return_pct"].mean().reset_index().rename(columns={"total_return_pct": "condo_total_return"})
         roi_hdb_r   = roi_hdb_r.rename(columns={"total_return_pct": "hdb_total_return"})
         merged = roi_hdb_r.merge(roi_condo_t, on="hdb_town", how="inner")
+        
+        if merged.empty:
+            st.error(
+                f"⚠️ **No data available for {hold_yrs}-year holding period.**\n\n"
+                f"Private condo data only covers **Aug 2021–2026** (~5 years). "
+                f"For holding periods >{max_condo_years:.0f} years, there is insufficient data to compute buy/sell pairs.\n\n"
+                f"**Try:**\n"
+                f"- Reduce holding period to ≤{max_condo_years:.0f} years\n"
+                f"- Use **Tab 2** to see HDB-only long-term returns"
+            )
+            st.stop()
+        
         merged["winner"] = merged.apply(
             lambda r: "HDB" if r["hdb_total_return"] > r["condo_total_return"] else "Condo", axis=1
         )
@@ -262,7 +274,8 @@ with tab_roi:
             },
             title=f"HDB vs Condo: who wins? ({hold_yrs}yr hold, {absd_profile})",
         )
-        max_ret = max(abs(merged[["hdb_total_return", "condo_total_return"]].values.flatten()))
+        returns_flat = merged[["hdb_total_return", "condo_total_return"]].values.flatten()
+        max_ret = max(abs(returns_flat)) if len(returns_flat) > 0 else 100
         fig_sc.add_shape(type="line", x0=-max_ret, y0=-max_ret, x1=max_ret, y1=max_ret,
                          line=dict(dash="dot", color="gray"))
         fig_sc.update_traces(textposition="top center", textfont_size=9)
